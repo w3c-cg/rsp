@@ -10,9 +10,11 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_C
 
 Please make changes through a [pull request](https://github.com/w3c-cg/rsp/pulls).
 
-## Specifications
+Any feedback, suggestions, or questions are welcome – please [open an issue](https://github.com/w3c-cg/rsp/issues/new) for that.
 
-<!-- TODO: add a simple index.html that links to the specs -->
+The [RSP CG wiki](https://www.w3.org/community/rsp/wiki/Main_Page) contains more information about the group, its activities, and how to get involved.
+
+## Specifications
 
 Currently, this repository contains the following specifications:
 
