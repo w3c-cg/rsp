@@ -1,0 +1,12 @@
+<pre class='metadata'>
+Title: Home of W3C RSP Community Group Specifications
+Status: LD
+Markup Shorthands: markdown yes
+URL: https://w3c-cg.github.io/rsp
+Shortname: RSP-CG
+Abstract: List of specifications developed by the W3C RSP Community Group.
+</pre>
+
+# Specifications # {#specs}
+
+- [RDF Messages](https://w3c-cg.github.io/rsp/spec/messages) – defines the base concepts of RDF Messages, RDF Message Streams, and RDF Message Logs.

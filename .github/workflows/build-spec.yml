@@ -16,6 +16,8 @@ jobs:
       matrix:
         include:
           # Add more specifications here as needed
+          - source: index.bs
+            destination: index.html
           - source: spec/messages.bs
             destination: spec/messages.html
 

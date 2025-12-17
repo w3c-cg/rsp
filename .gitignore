@@ -1,2 +1,2 @@
 # Should be generated with bikeshed, not committed
-/spec/*.html
+*.html

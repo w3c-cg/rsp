@@ -8,16 +8,22 @@ off!
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details.
 
+Please make changes through a [pull request](https://github.com/w3c-cg/rsp/pulls).
+
 ## Specifications
 
-<!-- TODO: update URLs once we get the CI working -->
 <!-- TODO: add a simple index.html that links to the specs -->
 
-- RDF Messages – [source code](spec/messages.bs), [published version](https://www.pieter.pm/rdf-messages)
+Currently, this repository contains the following specifications:
+
+- RDF Messages – [source code](spec/messages.bs), [published version](https://w3c-cg.github.io/rsp/spec/messages)
+    - Defines the base concepts of RDF Messages, RDF Message Streams, and RDF Message Logs.
+
+Additionally, there is the [index.bs](index.bs) file that lists the specifications ([published version](https://w3c-cg.github.io/rsp)).
 
 ### Editing the specifications
 
-We use [bikeshed](https://github.com/speced/bikeshed) with [pipx](https://pipx.pypa.io/stable/) to build the specifications. To build a spec, run:
+We use [bikeshed](https://speced.github.io/bikeshed/) with [pipx](https://pipx.pypa.io/stable/) to build the specifications. To build a spec, run:
 
 ```bash
 pipx run bikeshed spec spec/<spec-name>.bs

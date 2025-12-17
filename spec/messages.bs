@@ -1,13 +1,12 @@
-<!-- TODO: update URL and other metadata -->
 <pre class='metadata'>
 Title: RDF Messages
 Shortname: RDF-M
 Level: 1
 Status: LD
 Markup Shorthands: markdown yes
-URL: https://www.pieter.pm/rdf-messages
+URL: https://w3c-cg.github.io/rsp/spec/messages
 Editor: Pieter Colpaert, https://pietercolpaert.be
-Editor: Piotr Sowiński, https://ostrzyciel.eu/
+Editor: Piotr Sowiński, NeverBlink https://www.neverblink.eu/, https://ostrzyciel.eu/
 Repository: https://github.com/w3c-cg/rsp
 Abstract: Concepts and abstract data model for RDF Messages
 </pre>
