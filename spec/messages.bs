@@ -1,0 +1,214 @@
+<!-- TODO: update URL and other metadata -->
+<pre class='metadata'>
+Title: RDF Messages
+Shortname: RDF-M
+Level: 1
+Status: LD
+Markup Shorthands: markdown yes
+URL: https://www.pieter.pm/rdf-messages
+Editor: Pieter Colpaert, https://pietercolpaert.be
+Editor: Piotr Sowiński, https://ostrzyciel.eu/
+Repository: https://github.com/w3c-cg/rsp
+Abstract: Concepts and abstract data model for RDF Messages
+</pre>
+
+# Introduction # {#introduction}
+
+An <dfn>RDF Message</dfn> is an [RDF Dataset](https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-dataset) that is intended to be interpreted atomically as a single communicative act.
+The dataset of the message can be empty.
+
+Note: Each RDF Message is a separate "world" – it is up to the consumer to assert it more broadly if needed.
+
+Note: While no formal restrictions on the size of an RDF Message is defined, they are intended to be kept rather small and actionable.
+
+<figure>
+<div class="example" highlight="turtle">
+```turtle
+PREFIX as: <https://www.w3.org/ns/activitystreams#>
+PREFIX ex: <http://example.org/>
+
+ex:like-1 a as:Like ;
+  as:object ex:blogpost-1 ;
+  as:actor <https://pietercolpaert.be/#me> .
+```
+</div>
+<figcaption>Example of a message using the [[!activitystreams-vocabulary]] vocabulary.</figcaption>
+</figure>
+
+Note: You cannot refer to a specific RDF Message, you can only understand the quads belong together. You can however refer to resources defined within the message, such as to `ex:like-1` in the example above.
+
+An <dfn>RDF Message Stream</dfn> instance carries [=RDF Messages=] from one specific producer to one specific consumer.
+
+Note: This is concept is different from an RDF quad stream that carries individual quads.
+
+A <dfn>stream consumer</dfn> listens in on the stream using a stream protocol.
+
+A <dfn>stream producer</dfn> makes available a stream using a stream protocol.
+
+Note: The underlying stream protocol is out of scope of this specification. It can be for example [[!WebSockets]], [[!LDN]], [[!EventSource]], [Linked Data Event Streams](https://w3id.org/ldes/specification), [Jelly gRPC](https://w3id.org/jelly/), [MQTT](https://mqtt.org/), or a programming language-specific stream interface that carries RDF Datasets, or a collection or stream of RDF Quads.
+
+An <dfn>RDF Message Log</dfn> is an ordered collection of [=RDF Messages=].
+The log can be serialized from an [=RDF Message Stream=], and/or deserialized into an [=RDF Message Stream=].
+
+<figure>
+<div class="example" highlight="turtle">
+```turtle
+# a message defining the context
+ex:Stream1 a ex:Dataset;
+    rdfs:comment "A log of messages that appeared on a stream" .
+# @message a next message is an observation in the stream
+ex:Observation1
+    a sosa:Observation ;
+    sosa:resultTime "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    sosa:hasSimpleResult "..." .
+# @message an empty message
+# @message another observation
+ex:Observation2
+    a sosa:Observation ;
+    sosa:resultTime "2026-01-01T00:10:00Z"^^xsd:dateTime ;
+    sosa:hasSimpleResult "..." .	
+```
+</div>
+<figcaption>Example of an [=RDF Message Log=] publishing the [=RDF Messages=] that appeared in a stream so far.</figcaption>
+</figure>
+
+Note: A producer may want to indicate that a certain property is used to indicate the timestamp of when the message was created. This can be done, for example, using `ldes:timestampPath` from [Linked Data Event Streams](https://w3id.org/ldes/specification). Alternatively, when vocabularies such as ActivityStreams, SSN/SOSA, or PROV-O are used, one can just assume the respective properties `as:published`, `sosa:resultTime`, or `prov:generatedAtTime` are going to be used for this purpose.
+
+Note: Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.
+
+# RDF Message Streams # {#rdf-message-streams}
+
+A [=stream consumer=] has the functionality to create and access a new [=RDF Message Stream=] instance. An instance thus only exists when it is being consumed.
+
+A function is called on the [=stream consumer=], as specified by the underlying protocol, when the [=stream producer=] sends a new [=RDF Message=] on the [=RDF Message Stream=].
+
+Note: This is an abstraction over the underlying protocol or API.
+
+A [=stream producer=] MAY provide a mechanism to write only when a [=stream consumer=] is ready to process the next message.
+
+Issue: Find out and document the similarities/differences to the [RDF-JS Stream interface](https://rdf.js.org/stream-spec/)
+
+# Serializing and parsing RDF Message Logs # {#rdf-message-logs}
+
+In this specification we propose that all RDF serializations MUST implement a way to group quads into [=RDF Messages=].
+This way, a [=stream consumer=] can write the stream into an [=RDF Message Log=] that can be read again by a [=stream producer=] into an [=RDF Message Stream=].
+
+Note: While we do define content types for the RDF Message Log serialization formats, this does not imply that the serialization needs to be used over HTTP only. The use of alternative transport mechanisms is equally valid and encouraged.
+
+## N-Triples, N-Quads, Turtle and TriG ## {#turtle}
+
+The RDF serializations are either way being revised in the upcoming RDF 1.2 specification, in which [version labels](https://www.w3.org/TR/rdf12-concepts/#defined-version-labels) are proposed.
+This is a proposal to the working group to include this concept by including yet another `content-type` directive as follows: `Content-Type: application/trig; version=1.2; messages=rdfm`.
+This indicates that the messages are following this spec in this HTTP Response. Clients that do not rely on [=RDF Messages=] can still interpret the response as regular RDF 1.2 data.
+
+When the `content-type` flagged the support for messages, and a parser is in message mode, it MUST:
+ 1. Consider every triple in the document as part of an [=RDF Message=]. The document does not need to start with a delimiter. If it does start with a delimiter, the content after the delimiter is part of the first message and the document did not start with an empty message.
+ 2. Triples are added to the current message as long as no delimiter or EOF has been encountered.
+ 3. When a delimiter was encountered, the current [=RDF Message=] is finalized and a next one is opened.
+
+The delimiter is a comment in the document that matches this regex: `/^\s*@message/`.
+
+Issue: Should we allow repeated `BASE` and `PREFIX` directives in Turtle / TriG RDF Message Logs? Should they override the previously encountered directives? This may require additional work in the parser.
+
+## JSON-LD ## {#json-ld}
+
+Issue: This discussion is preliminary, yet on-going, in the JSON-LD group itself with a proposal called [newline delimited JSON-LD](https://github.com/json-ld/ndjson-ld/issues/1). We propose that that specification becomes the preferred way of adding messages support in JSON-LD. It is [already implemented in some libraries](https://github.com/eclipse-rdf4j/rdf4j/issues/2840) and it is already being used in some projects.
+
+Issue: Instead of using a newline delimited format, also other types of RDF Message delimiting can be imagined, for example, by using an array of elements linked from an `@message` directive, indicating to the parser that the JSON-LD object that follows is to be interpreted as an RDF Message.
+
+## RDF/XML ## {#rdf-xml}
+
+Each message is a new XML document on a new line.
+
+This is made discoverable with a new content-type: `Content-Type: application/rdfm+xml`
+
+## Other formats ## {#other-formats}
+
+Efficient interchange of [=RDF Message Log=] may also be done using binary RDF serializations, such as [Jelly](https://w3id.org/jelly/), which already has built-in support for grouping quads into messages. We propose that Jelly and similar formats use the definitions from this specification to define the semantics of RDF Messages.
+
+# Examples and use cases # {#examples}
+
+## An archive of an RDF Stream ## {#stream-archive}
+
+When you write out an [=RDF Message Log=] into a file, all [=RDF Messages=] are preserved when deserializing it again.
+They are streamed out in the same order as they were written into the file.
+
+Without the semantics of an [=RDF Message=], and without the syntax for it, trying to reconstruct the intended message becomes slow and cannot be solved without using sub-optimal heuristics.
+The performance loss is due to the fact that there could always be another quad at the end of the file that still needs to be considered for the message, as you cannot rely on the quads being grouped together.
+A heuristic is needed as you can only guess that e.g. subject-based star patterns, or maybe a [[!CBD]], or maybe a named graph is going to be used.
+This is what is being used by [the Linked Data Event Streams “member extraction” step](https://semiceu.github.io/LinkedDataEventStreams/#members).
+
+## SPARQL CONSTRUCT results ## {#sparql-construct-messages}
+
+<figure>
+<div class="example" highlight="sparql">
+```sparql
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+CONSTRUCT {
+  ?company a dbo:Company ;
+       dbo:location ?location .
+  
+  ?location rdf:type dbo:Country ;
+            rdfs:label ?lname ;
+            dbp:populationCensus ?pop .
+} WHERE {
+    ?company dbo:location | dbo:locationCountry ?location .
+    
+    ?location rdf:type dbo:Country ;
+              rdfs:label ?lname ;
+              dbp:populationCensus | dbo:populationTotal ?pop .
+    
+    FILTER (LANG(?lname) = "en")
+} ORDER BY ?location LIMIT 10000
+```
+</div>
+<figcaption>If the query engine would support RDF Message Logs to indicate that groups of triples are part of a certain result, it would speed up clients that want to use the message as a meaningful concept.</figcaption>
+</figure>
+
+<!-- TODO: fix the example, the query times out currently -->
+
+The example (Test it using the [DBpedia SPARQL endpoint](https://dbpedia.org/sparql)) generates 10000 companies in countries and lists the population number of the country.
+Now imagine that a consumer wants to process the results of this SPARQL query, where each construct result is an [=RDF Message=].
+While the server could have grouped the quads for the consumer, the consumer will have to re-construct the BGP in the CONSTRUCT clause again on the client before it can proceed.
+The obvious solution here is to use an [=RDF Message Stream=].
+
+## RiverBench dataset distributions ## {#riverbench-dataset-distributions}
+
+Benchmark datasets in [RiverBench](https://w3id.org/riverbench/) are streams of RDF datasets, where each RDF dataset can be processed individually as an RDF Message. They represent real-world use cases of streaming RDF data.
+For example, the [officegraph dataset](https://w3id.org/riverbench/datasets/officegraph/dev) consists of almost 15 million RDF graphs with IoT measurements (see example below).
+
+<figure>
+<div class="example" highlight="turtle">
+```turtle
+PREFIX ic:    <https://interconnectproject.eu/example/>
+PREFIX om:    <http://www.wurvoc.org/vocabularies/om-1.8/>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>
+
+ic:property_R5_56__co2_
+        a       ic:CO2Level .
+
+ic:measurement_R5_56__co2__0
+        a                        saref:Measurement;
+        saref:hasTimestamp       "2022-02-28T23:59:00"^^xsd:dateTime;
+        saref:hasValue           "504"^^xsd:float;
+        saref:isMeasuredIn       om:partsPerMillion;
+        saref:relatesToProperty  ic:property_R5_56__co2_ .
+```
+</div>
+<figcaption>Example of an RDF Message in the officegraph dataset.</figcaption>
+</figure>
+
+To distribute this stream, a TAR archive is used, where each file in the archive is an RDF Message in the stream.
+This could be greatly improved by using an [=RDF Message Log=] serialization instead, as this would allow to save the entire stream into a single file, while still being able to reconstruct the individual messages again.
+
+As an alternative, [Jelly-RDF](https://w3id.org/jelly) distributions are also available, where the entire stream is serialized as a single `.jelly` file. In the file, one [Jelly frame](https://w3id.org/jelly/dev/user-guide/#stream-frames) corresponds to one RDF dataset. Under this specification, this would be a valid [=RDF Message Log=] serialization.
+
+## Nanopublications ## {#nanopublications}
+
+A [Nanopublication](https://nanopub.net/) is a small RDF dataset that contains an assertion, its provenance, and publication information. Nanopublications are stored and exchanged by a network of services (registries and query endpoints). Exchanging each Nanopublication individually leads to significant overhead, due to repeated HTTP requests necessitated by the lack of a format for grouping multiple Nanopublications together. This issue was resolved by using [Jelly](https://w3id.org/jelly/) to serialize multiple Nanopublications into a single byte stream, where each Nanopublication corresponds to a [Jelly frame](https://w3id.org/jelly/dev/user-guide/#stream-frames).
+
+Using an [=RDF Message Log=] serialization to group multiple Nanopublications into a single file would also solve this problem, while still allowing each Nanopublication to be processed individually as an [=RDF Message=].
