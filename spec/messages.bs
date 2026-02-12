@@ -150,17 +150,68 @@ Issue: Should we allow repeated `BASE` and `PREFIX` directives in Turtle / TriG 
 
 Issue: This discussion is preliminary, yet on-going, in the JSON-LD group itself with a proposal called [newline delimited JSON-LD](https://github.com/json-ld/ndjson-ld/issues/1). We propose that that specification becomes the preferred way of adding messages support in JSON-LD. It is [already implemented in some libraries](https://github.com/eclipse-rdf4j/rdf4j/issues/2840) and it is already being used in some projects.
 
-Issue: Instead of using a newline delimited format, also other types of RDF Message delimiting can be imagined, for example, by using an array of elements linked from an `@message` directive, indicating to the parser that the JSON-LD object that follows is to be interpreted as an RDF Message.
+We propose to use the [unofficial NDJSON-LD format](https://github.com/json-ld/ndjson-ld) as the serialization format for [=RDF Message Logs=] in JSON-LD. In [NDJSON](https://github.com/ndjson/ndjson-spec), multiple JSON objects are concatenated together, with each object being separated by a newline character (`\n`). NDJSON-LD simply applies this format to JSON-LD documents, where each each line corresponds to an [=RDF Message=].
+
+Issue: What should be the content type for this format? RDF4J currently uses `application/x-ld+ndjson` – [see the pull request](https://github.com/eclipse-rdf4j/rdf4j/pull/2845).
+
+<figure>
+<div class="example" highlight="json">
+```json
+{"@context": "https://schema.org/", "@type": "Product", "name": "Hairdryer DRY 2000", "color": "red"}
+{"@context": "https://schema.org/", "@type": "Product", "name": "27-inch 4K Monitor 2700P", "color": "black"}
+```
+</div>
+<figcaption>Example of an [=RDF Message Log=] in the NDJSON-LD serialization format.</figcaption>
+</figure>
+
+## YAML-LD ## {#yaml-ld}
+
+Issue: Tracked as <w3c-cg/rsp#4>. The format proposed here is incompatible with the [YAML-LD Final Community Group Report](https://www.w3.org/community/reports/json-ld/CG-FINAL-yaml-ld-20231206/), which proposes to instead transform YAML streams into a top-level array in a JSON-LD document. The discussion on this topic is still on-going and must be resolved in collaboration with the newly-rechartered JSON-LD WG.
+
+The [[!YAML]] format includes built-in support for *YAML streams*, where multiple YAML documents are concatenated together, with each document being separated typically by a line containing three dashes (`---`). We propose to use that mechanism to serialize [=RDF Message Logs=], where each YAML document corresponds to an [=RDF Message=].
+
+This is made discoverable with a new content-type: `Content-Type: application/rdfm+yaml`
+
+Issue: Is this the correct content type?
+
+<figure>
+<div class="example" highlight="yaml">
+```yaml
+"@context": https://schema.org/
+"@type": Product
+name: Hairdryer DRY 2000
+color: red
+---
+"@context": https://schema.org/
+"@type": Product
+name: 27-inch 4K Monitor 2700P
+color: black
+```
+</div>
+<figcaption>Example of an [=RDF Message Log=] in the YAML-LD serialization format.</figcaption>
+</figure>
 
 ## RDF/XML ## {#rdf-xml}
 
-Each message is a new XML document on a new line.
+Each message is a new XML document on a new line. The documents are separated with the `\n` character.
 
 This is made discoverable with a new content-type: `Content-Type: application/rdfm+xml`
 
+<figure>
+<div class="example" highlight="xml">
+<xmp>
+<?xml version="1.0" encoding="utf-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:schema="http://schema.org/"><rdf:Description rdf:nodeID="b3"><rdf:type rdf:resource="http://schema.org/Product"/><schema:name>Hairdryer DRY 2000</schema:name><schema:color>red</schema:color></rdf:Description></rdf:RDF>
+<?xml version="1.0" encoding="utf-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:schema="http://schema.org/"><rdf:Description rdf:nodeID="b3"><rdf:type rdf:resource="http://schema.org/Product"/><schema:name>27-inch 4K Monitor 2700P</schema:name><schema:color>black</schema:color></rdf:Description></rdf:RDF>
+</xmp>
+</div>
+<figcaption>Example of an [=RDF Message Log=] in the RDF/XML serialization format.</figcaption>
+</figure>
+
+Issue: Is there a different industry-standard way to serialize multiple RDF/XML documents into a single file?
+
 ## Other formats ## {#other-formats}
 
-Efficient interchange of [=RDF Message Log=] may also be done using binary RDF serializations, such as [Jelly](https://w3id.org/jelly/), which already has built-in support for grouping quads into messages. We propose that Jelly and similar formats use the definitions from this specification to define the semantics of RDF Messages.
+Efficient interchange of [=RDF Message Logs=] may also be done using binary RDF serializations, such as [Jelly](https://w3id.org/jelly/), which already has built-in support for grouping quads into messages. We propose that Jelly and similar formats use the definitions from this specification to define the semantics of RDF Messages.
 
 # Examples and use cases # {#examples}
 
