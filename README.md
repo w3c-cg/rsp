@@ -1,8 +1,7 @@
 
-# Specification 'rsp'
+# Specifications of the RDF Stream Processing Community Group
 
-This is the repository for rsp. You're welcome to contribute! Let's make the Web rock our socks
-off!
+This is the repository for the RDF Stream Processing Community Group (RSP CG) specifications.
 
 ## Contributing
 
@@ -12,7 +11,7 @@ Please make changes through a [pull request](https://github.com/w3c-cg/rsp/pulls
 
 Any feedback, suggestions, or questions are welcome – please [open an issue](https://github.com/w3c-cg/rsp/issues/new) for that.
 
-The [RSP CG wiki](https://www.w3.org/community/rsp/wiki/Main_Page) contains more information about the group, its activities, and how to get involved.
+The [RSP CG wiki](https://www.w3.org/community/rsp/wiki/Main_Page) contains more information about the Community Group, its activities, and how to get involved.
 
 ## Specifications
 
