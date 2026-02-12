@@ -56,7 +56,7 @@ ex:obs1 a sosa:Observation ;
 <figcaption>Example of an IoT measurement RDF Message using the [[!vocab-ssn]] vocabulary.</figcaption>
 </figure>
 
-Note: This specification does provide any mechanism for referring to an RDF Message (for example, with an IRI). You can instead refer to resources defined within the message, such as to `ex:like-1` in the example above.
+Note: This specification does provide any mechanism for referring to an RDF Message (for example, with an IRI). You can instead refer to resources defined within the message, such as to `ex:like-1` or `ex:obs1` in the examples above.
 
 ## Scope of RDF Messages ## {#scope}
 
