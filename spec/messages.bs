@@ -66,19 +66,30 @@ For example, if each message describes the state of a domestic cat at a certain 
 
 ## RDF Message Streams ## {#rdf-message-streams}
 
-An <dfn>RDF Message Stream</dfn> instance carries [=RDF Messages=] from one specific producer to one specific consumer.
+An <dfn>RDF Message Stream</dfn> is an ordered, potentially unbounded sequence of [=RDF Messages=]. An [=RDF Message Stream=] carries [=RDF Messages=] from one specific producer to one specific consumer.
 
-Note: This is concept is different from an RDF quad stream that carries individual quads.
+Note: This concept is different from an RDF quad stream that carries individual quads.
 
-A <dfn>stream consumer</dfn> listens in on the stream using a stream protocol.
+A <dfn>stream producer</dfn> makes available an [=RDF Message Stream=] using a stream protocol.
 
-A <dfn>stream producer</dfn> makes available a stream using a stream protocol.
+A <dfn>stream consumer</dfn> consumes the [=RDF Messages=] in the [=RDF Message Stream=] using a stream protocol.
+
+Issue: Add a diagram illustrating RDF Messages, an RDF Message Stream, stream producers, and stream consumers.
 
 Note: The underlying stream protocol is out of scope of this specification. It can be for example [[!WebSockets]], [[!LDN]], [[!EventSource]], [Linked Data Event Streams](https://w3id.org/ldes/specification), [Jelly gRPC](https://w3id.org/jelly/), [MQTT](https://mqtt.org/), or a programming language-specific stream interface that carries RDF Datasets, or a collection or stream of RDF Quads.
 
+Stream protocols used for [=RDF Message Streams=] may support any streaming semantics. For example:
+
+- Delivery guarantees: at most once, at least once, exactly once.
+- Ordering guarantees: ordered, unordered, partially ordered. While we assume that an [=RDF Message Stream=] is ordered, the order does have to be the same for the producer and the consumer.
+- Flow control: push-based, pull-based, or hybrid.
+
+Issue: Find out and document the similarities/differences to the [RDF-JS Stream interface](https://rdf.js.org/stream-spec/)
+
 ## RDF Message Logs ## {#rdf-message-logs}
 
-An <dfn>RDF Message Log</dfn> is an ordered collection of [=RDF Messages=].
+An <dfn>RDF Message Log</dfn> is a static representation of an [=RDF Message Stream=], which can be used for archiving, sharing, and processing the messages in the stream at a later point in time. 
+
 The log can be serialized from an [=RDF Message Stream=], and/or deserialized into an [=RDF Message Stream=].
 
 <figure>
@@ -103,21 +114,11 @@ ex:Observation2
 <figcaption>Example of an [=RDF Message Log=] publishing the [=RDF Messages=] that appeared in a stream so far.</figcaption>
 </figure>
 
+Issue: Can we provide an example of an RDF Message Log that does not use any of the formats that we define in the next section, to illustrate the concept of an RDF Message Log without relying on the syntax of a specific format?
+
 Note: A producer may want to indicate that a certain property is used to indicate the timestamp of when the message was created. This can be done, for example, using `ldes:timestampPath` from [Linked Data Event Streams](https://w3id.org/ldes/specification). Alternatively, when vocabularies such as ActivityStreams, SSN/SOSA, or PROV-O are used, one can just assume the respective properties `as:published`, `sosa:resultTime`, or `prov:generatedAtTime` are going to be used for this purpose.
 
 Note: Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.
-
-# RDF Message Streams # {#rdf-message-streams}
-
-A [=stream consumer=] has the functionality to create and access a new [=RDF Message Stream=] instance. An instance thus only exists when it is being consumed.
-
-A function is called on the [=stream consumer=], as specified by the underlying protocol, when the [=stream producer=] sends a new [=RDF Message=] on the [=RDF Message Stream=].
-
-Note: This is an abstraction over the underlying protocol or API.
-
-A [=stream producer=] MAY provide a mechanism to write only when a [=stream consumer=] is ready to process the next message.
-
-Issue: Find out and document the similarities/differences to the [RDF-JS Stream interface](https://rdf.js.org/stream-spec/)
 
 # Serializing and parsing RDF Message Logs # {#rdf-message-logs}
 
