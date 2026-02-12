@@ -13,7 +13,11 @@ Abstract: Concepts and abstract data model for RDF Messages
 
 # Introduction # {#introduction}
 
-Issue: Write a brief summary of the specification, and motivation for it.
+This specification defines the concepts of RDF Messages, RDF Message Streams, and RDF Message Logs, as well as the syntax for serializing RDF Message Logs in various RDF serialization formats.
+
+In this document, we are discussing *message-level* streaming, where streams are sequences of discrete messages, with each message containing multiple RDF quads. This is in contrast to *triple-* or *quad-level* streaming of RDF data, where streams are sequences of individual RDF triples or quads. For quad-level streaming, please refer to, for example: [[!n-quads]], [[!n-triples]], and [[!json-ld11-streaming]].
+
+Note: Quad-level streaming is complementary to message-level streaming, and both can be used together. This is the case, for example, in the [Jelly](https://w3id.org/jelly/) serialization format, as well as some of the formats proposed in [[#rdf-message-logs-serialization]].
 
 ## RDF Messages ## {#rdf-messages}
 
@@ -56,7 +60,7 @@ ex:obs1 a sosa:Observation ;
 <figcaption>Example of an IoT measurement RDF Message using the [[!vocab-ssn]] vocabulary.</figcaption>
 </figure>
 
-Note: This specification does provide any mechanism for referring to an RDF Message (for example, with an IRI). You can instead refer to resources defined within the message, such as to `ex:like-1` or `ex:obs1` in the examples above.
+Note: This specification does not provide any mechanism for referring to an RDF Message (for example, with an IRI). You can instead refer to resources defined within the message, such as to `ex:like-1` or `ex:obs1` in the examples above.
 
 ## Scope of RDF Messages ## {#scope}
 
@@ -120,7 +124,7 @@ Note: A producer may want to indicate that a certain property is used to indicat
 
 Note: Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.
 
-# Serializing and parsing RDF Message Logs # {#rdf-message-logs}
+# Serializing and parsing RDF Message Logs # {#rdf-message-logs-serialization}
 
 In this specification we propose that all RDF serializations MUST implement a way to group quads into [=RDF Messages=].
 This way, a [=stream consumer=] can write the stream into an [=RDF Message Log=] that can be read again by a [=stream producer=] into an [=RDF Message Stream=].
