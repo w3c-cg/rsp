@@ -13,28 +13,58 @@ Abstract: Concepts and abstract data model for RDF Messages
 
 # Introduction # {#introduction}
 
+Issue: Write a brief summary of the specification, and motivation for it.
+
+## RDF Messages ## {#rdf-messages}
+
 An <dfn>RDF Message</dfn> is an [RDF Dataset](https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-dataset) that is intended to be interpreted atomically as a single communicative act.
 The dataset of the message can be empty.
 
-Note: Each RDF Message is a separate "world" – it is up to the consumer to assert it more broadly if needed.
-
-Note: While no formal restrictions on the size of an RDF Message is defined, they are intended to be kept rather small and actionable.
+Note: While no formal restrictions on the size of an RDF Message are defined, RDF Messages are intended to be of limited size, in relative terms.
 
 <figure>
 <div class="example" highlight="turtle">
 ```turtle
 PREFIX as: <https://www.w3.org/ns/activitystreams#>
-PREFIX ex: <http://example.org/>
+PREFIX ex: <https://example.org/>
 
 ex:like-1 a as:Like ;
   as:object ex:blogpost-1 ;
   as:actor <https://pietercolpaert.be/#me> .
 ```
 </div>
-<figcaption>Example of a message using the [[!activitystreams-vocabulary]] vocabulary.</figcaption>
+<figcaption>Example of a social RDF Message using the [[!activitystreams-vocabulary]] vocabulary.</figcaption>
 </figure>
 
-Note: You cannot refer to a specific RDF Message, you can only understand the quads belong together. You can however refer to resources defined within the message, such as to `ex:like-1` in the example above.
+<figure>
+<div class="example" highlight="turtle">
+```turtle
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX ex: <https://example.org/>
+
+ex:obs1 a sosa:Observation ;
+    sosa:observedProperty ex:TemperatureAccuracy ;
+    sosa:isObservedBy ex:IBS-TH2-Plus-T-687343;
+    sosa:hasResult [ 
+            qudt:value 0.5 ;
+            qudt:hasUnit unit:DEG_C ;
+    ] .
+```
+</div>
+<figcaption>Example of an IoT measurement RDF Message using the [[!vocab-ssn]] vocabulary.</figcaption>
+</figure>
+
+Note: This specification does provide any mechanism for referring to an RDF Message (for example, with an IRI). You can instead refer to resources defined within the message, such as to `ex:like-1` in the example above.
+
+## Scope of RDF Messages ## {#scope}
+
+Each [=RDF Message=] is a separate "world" – by default we assume that what is asserted in one message, is not asserted in other messages. Consumers can however choose to assert messages more broadly.
+
+For example, if each message describes the state of a domestic cat at a certain point in time, one message may report that the cat is running, while another message that the cat is sleeping. This is not a contradiction, as the messages are by default separate "worlds" that should be interpreted independently. Only if the consumer chooses to assert the messages together, it can be concluded that the cat is running and sleeping at the same time, which is a contradiction.
+
+## RDF Message Streams ## {#rdf-message-streams}
 
 An <dfn>RDF Message Stream</dfn> instance carries [=RDF Messages=] from one specific producer to one specific consumer.
 
@@ -45,6 +75,8 @@ A <dfn>stream consumer</dfn> listens in on the stream using a stream protocol.
 A <dfn>stream producer</dfn> makes available a stream using a stream protocol.
 
 Note: The underlying stream protocol is out of scope of this specification. It can be for example [[!WebSockets]], [[!LDN]], [[!EventSource]], [Linked Data Event Streams](https://w3id.org/ldes/specification), [Jelly gRPC](https://w3id.org/jelly/), [MQTT](https://mqtt.org/), or a programming language-specific stream interface that carries RDF Datasets, or a collection or stream of RDF Quads.
+
+## RDF Message Logs ## {#rdf-message-logs}
 
 An <dfn>RDF Message Log</dfn> is an ordered collection of [=RDF Messages=].
 The log can be serialized from an [=RDF Message Stream=], and/or deserialized into an [=RDF Message Stream=].
