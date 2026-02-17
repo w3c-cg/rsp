@@ -30,7 +30,7 @@ We use [bikeshed](https://speced.github.io/bikeshed/) with [pipx](https://pipx.p
 pipx run bikeshed spec spec/<spec-name>.bs
 ```
 
-You can also start bikeshed in watch mode to automatically rebuild the spec on changes, and have it serve the spec on a local web server:
+You can also start bikeshed in watch mode to automatically rebuild the specs on changes, and have it serve the specs on a local web server:
 
 ```bash
 pipx run bikeshed serve
