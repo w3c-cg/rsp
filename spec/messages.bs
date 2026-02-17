@@ -22,9 +22,11 @@ Note: Quad-level streaming is complementary to message-level streaming, and both
 ## RDF Messages ## {#rdf-messages}
 
 An <dfn>RDF Message</dfn> is an [RDF Dataset](https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-dataset) that is intended to be interpreted atomically as a single communicative act.
-The dataset of the message can be empty.
+The message can be empty (contain no quads).
 
 Note: While no formal restrictions on the size of an RDF Message are defined, RDF Messages are intended to be of limited size, in relative terms.
+
+Note: There is no structural difference between an RDF Message and a RDF dataset. The difference is only in the intended interpretation of the data.
 
 <figure>
 <div class="example" highlight="turtle">
@@ -62,12 +64,6 @@ ex:obs1 a sosa:Observation ;
 
 Note: This specification does not provide any mechanism for referring to an RDF Message (for example, with an IRI). You can instead refer to resources defined within the message, such as to `ex:like-1` or `ex:obs1` in the examples above.
 
-## Scope of RDF Messages ## {#scope}
-
-Each [=RDF Message=] is a separate "world" – by default we assume that what is asserted in one message, is not asserted in other messages. Consumers can however choose to assert messages more broadly.
-
-For example, if each message describes the state of a domestic cat at a certain point in time, one message may report that the cat is running, while another message that the cat is sleeping. This is not a contradiction, as the messages are by default separate "worlds" that should be interpreted independently. Only if the consumer chooses to assert the messages together, it can be concluded that the cat is running and sleeping at the same time, which is a contradiction.
-
 ## RDF Message Streams ## {#rdf-message-streams}
 
 An <dfn>RDF Message Stream</dfn> is an ordered, potentially unbounded sequence of [=RDF Messages=]. An [=RDF Message Stream=] carries [=RDF Messages=] from one specific producer to one specific consumer.
@@ -89,6 +85,14 @@ Stream protocols used for [=RDF Message Streams=] may support any streaming sema
 - Flow control: push-based, pull-based, or hybrid.
 
 Issue: Find out and document the similarities/differences to the [RDF-JS Stream interface](https://rdf.js.org/stream-spec/)
+
+## Scope of RDF Messages ## {#scope}
+
+By default, we assume that [=RDF Messages=] in an [=RDF Message Stream=] are not in the same "world" – what is asserted in one message, is not asserted in other messages.
+
+For example, if each message describes the state of a domestic cat at a certain point in time, one message may report that the cat is running, while another message that the cat is sleeping. This is not a contradiction, as the messages are by default separate "worlds" that should be interpreted independently.
+
+[=RDF Message Stream Profiles=] can be used to indicate that messages should be interpreted in a broader scope. For example, a profile may indicate that all messages in a stream should be interpreted together. In this case, it could be concluded that the cat is running and sleeping at the same time, which is a contradiction.
 
 ## RDF Message Logs ## {#rdf-message-logs}
 
@@ -212,6 +216,12 @@ Issue: Is there a different industry-standard way to serialize multiple RDF/XML 
 ## Other formats ## {#other-formats}
 
 Efficient interchange of [=RDF Message Logs=] may also be done using binary RDF serializations, such as [Jelly](https://w3id.org/jelly/), which already has built-in support for grouping quads into messages. We propose that Jelly and similar formats use the definitions from this specification to define the semantics of RDF Messages.
+
+# RDF Message Stream Profiles # {#rdf-message-stream-profiles}
+
+Issue: Write down the section on profiles. Tracked as <w3c-cg/rsp#1>.
+
+An <dfn>RDF Message Stream Profile</dfn> is a ... (TODO)
 
 # Examples and use cases # {#examples}
 
