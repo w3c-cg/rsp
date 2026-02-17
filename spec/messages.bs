@@ -22,7 +22,7 @@ Note: Quad-level streaming is complementary to message-level streaming, and both
 ## RDF Messages ## {#rdf-messages}
 
 An <dfn>RDF Message</dfn> is an [RDF Dataset](https://www.w3.org/TR/rdf12-concepts/#dfn-rdf-dataset) that is intended to be interpreted atomically as a single communicative act.
-The message can be empty (contain no quads).
+A message can be empty (contain no quads).
 
 Note: While no formal restrictions on the size of an RDF Message are defined, RDF Messages are intended to be of limited size, in relative terms.
 
@@ -88,7 +88,7 @@ Issue: Find out and document the similarities/differences to the [RDF-JS Stream 
 
 ## Scope of RDF Messages ## {#scope}
 
-By default, we assume that [=RDF Messages=] in an [=RDF Message Stream=] are not in the same "world" – what is asserted in one message, is not asserted in other messages.
+By default, we assume that [=RDF Messages=] in an [=RDF Message Stream=] are not in the same "world". In other words, what is asserted in one message, is not asserted in other messages.
 
 For example, if each message describes the state of a domestic cat at a certain point in time, one message may report that the cat is running, while another message that the cat is sleeping. This is not a contradiction, as the messages are by default separate "worlds" that should be interpreted independently.
 
