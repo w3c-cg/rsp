@@ -97,14 +97,16 @@ In this example, the server is the **stream producer**, and the client is the **
 </div>
 
 <div class="example">
-An MQTT broker ([[mqtt-5]]) hosts a topic `iot/temparature` to which RDF Messages are published by an IoT thermometer. Multiple clients, at different points in time, subscribe to that topic to consume the RDF Messages being published. Because of the used Quality-of-Service settings (QoS 0), some messages maybe be lost, resulting in different clients seeing different subsets of the messages published on the topic.
+An MQTT broker ([[mqtt-5]]) hosts a topic `iot/temparature` to which RDF Messages are published by an IoT thermometer. Multiple clients, at different points in time, subscribe to that topic to consume the RDF Messages being published. Because of the used Quality-of-Service settings (QoS 0), some messages maybe be lost or reordered, resulting in different clients seeing different subsets of the messages published on the topic.
 
 In this example:
 
 - The IoT thermometer is a **stream producer** that produces an [=RDF Message Stream=] by publishing RDF Messages to the MQTT broker, which acts as the **stream consumer**.
 - For each individual client, the MQTT broker is a **stream producer** that produces an [=RDF Message Stream=] by sending RDF Messages to the client, which acts as the **stream consumer**.
 
-For example, for 5 clients subscribing to the topic, there would be 6 different [=RDF Message Streams=]: one from the IoT thermometer to the MQTT broker, and one from the MQTT broker to each of the 5 clients. Each of these streams may have different messages in them, due to the Quality-of-Service settings and the clients subscribing to the stream at different points in time.
+For example, for 5 clients subscribing to the topic, there would be 6 different [=RDF Message Streams=]: one from the IoT thermometer to the MQTT broker, and one from the MQTT broker to each of the 5 clients. Each of these streams may have different messages in them and have a different order, due to the Quality-of-Service settings and the clients subscribing to the stream at different points in time.
+
+Note that here we are discussing the RDF Message Stream from the perspective of the consumers. If some messages are lost between the producer and the consumer, then the two parties observe effectively two different streams.
 </div>
 
 Issue: Add a diagram illustrating RDF Messages, an RDF Message Stream, stream producers, and stream consumers.
