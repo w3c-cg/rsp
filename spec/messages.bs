@@ -76,9 +76,13 @@ Note: This definition is intentionally abstract and simple. More details about i
 
 By default, we assume that [=RDF Messages=] in an [=RDF Message Stream=] are not in the same "world". In other words, what is asserted in one message, is not asserted in other messages.
 
+[=RDF Message Stream Profiles=] can be used to indicate that messages should be interpreted in a broader scope.
+
+<div class="example">
 For example, if each message describes the state of a domestic cat at a certain point in time, one message may report that the cat is running, while another message that the cat is sleeping. This is not a contradiction, as the messages are by default separate "worlds" that should be interpreted independently.
 
-[=RDF Message Stream Profiles=] can be used to indicate that messages should be interpreted in a broader scope. For example, a profile may indicate that all messages in a stream should be interpreted together. In this case, it could be concluded that the cat is running and sleeping at the same time, which is a contradiction.
+An [=RDF Message Stream Profile=] may indicate that all messages in a stream should be interpreted together. In this case, it could be concluded that the cat is running and sleeping at the same time, which is a contradiction.
+</div>
 
 ## RDF Message Stream Producers and Consumers ## {#producers-consumers}
 
