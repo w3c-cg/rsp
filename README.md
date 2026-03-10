@@ -33,7 +33,7 @@ pipx run bikeshed spec spec/<spec-name>.bs
 You can also start bikeshed in watch mode to automatically rebuild the specs on changes, and have it serve the specs on a local web server:
 
 ```bash
-pipx run bikeshed serve spec/spec-name>.bs
+pipx run bikeshed serve spec/<spec-name>.bs
 ```
 
 To view, for example, `messages.bs`, open `http://localhost:8000/spec/messages.html` in your web browser.
