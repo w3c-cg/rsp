@@ -88,7 +88,7 @@ An [=RDF Message Stream Profile=] may indicate that all messages in a stream sho
 
 An <dfn>RDF Message Stream Producer</dfn> can make an [=RDF Message Stream=] available to be consumed by an <dfn>RDF Message Stream Consumer</dfn> using a stream protocol.
 
-The underlying stream protocol is out of scope of this specification. It can be for example [[!WebSockets]], [[!LDN]], [[!EventSource]], [Linked Data Event Streams](https://w3id.org/ldes/specification), [Jelly gRPC](https://w3id.org/jelly/), [MQTT](https://mqtt.org/), or a programming language-specific stream interface that carries RDF Datasets, or a collection or stream of RDF Quads.
+The underlying stream protocol is out of scope of this specification. It can be for example [[!WebSockets]], [[!LDN]], [[!EventSource]], [Linked Data Event Streams](https://w3id.org/ldes/specification), [Jelly gRPC](https://w3id.org/jelly/), [MQTT](https://mqtt.org/), or a programming language-specific stream interface that carries [=RDF Messages=], or a collection or stream of RDF Quads.
 
 Stream protocols used for [=RDF Message Streams=] may support any streaming semantics, such as delivery guarantees, ordering, and flow control (pull-based, push-based, etc.).
 
