@@ -66,33 +66,54 @@ Note: This specification does not provide any mechanism for referring to an RDF 
 
 ## RDF Message Streams ## {#rdf-message-streams}
 
-An <dfn>RDF Message Stream</dfn> is an ordered, potentially unbounded sequence of [=RDF Messages=]. An [=RDF Message Stream=] carries [=RDF Messages=] from one specific producer to one specific consumer.
+An <dfn>RDF Message Stream</dfn> is an ordered, potentially unbounded sequence of [=RDF Messages=].
 
-Note: This concept is different from an RDF quad stream that carries individual quads.
+Note: This concept is different from an RDF quad stream that is a stream of individual quads.
 
-A <dfn>stream producer</dfn> makes available an [=RDF Message Stream=] using a stream protocol.
-
-A <dfn>stream consumer</dfn> consumes the [=RDF Messages=] in the [=RDF Message Stream=] using a stream protocol.
-
-Issue: Add a diagram illustrating RDF Messages, an RDF Message Stream, stream producers, and stream consumers.
-
-Note: The underlying stream protocol is out of scope of this specification. It can be for example [[!WebSockets]], [[!LDN]], [[!EventSource]], [Linked Data Event Streams](https://w3id.org/ldes/specification), [Jelly gRPC](https://w3id.org/jelly/), [MQTT](https://mqtt.org/), or a programming language-specific stream interface that carries RDF Datasets, or a collection or stream of RDF Quads.
-
-Stream protocols used for [=RDF Message Streams=] may support any streaming semantics. For example:
-
-- Delivery guarantees: at most once, at least once, exactly once.
-- Ordering guarantees: ordered, unordered, partially ordered. While we assume that an [=RDF Message Stream=] is ordered, the order does have to be the same for the producer and the consumer.
-- Flow control: push-based, pull-based, or hybrid.
-
-Issue: Find out and document the similarities/differences to the [RDF-JS Stream interface](https://rdf.js.org/stream-spec/)
+Note: This definition is intentionally abstract and simple. More details about implementing RDF Message Streams are provided in [[#producers-consumers]].
 
 ## Scope of RDF Messages ## {#scope}
 
-By default, we assume that [=RDF Messages=] in an [=RDF Message Stream=] are not in the same "world". In other words, what is asserted in one message, is not asserted in other messages.
+By default, we assume that the [=RDF Messages=] in an [=RDF Message Stream=] are distinct and should therefore not be combined, unless an [=RDF Message Stream Profile=] overrules this default. This means that, by default, what is asserted in one message, is not asserted in other messages.
 
+<div class="example">
 For example, if each message describes the state of a domestic cat at a certain point in time, one message may report that the cat is running, while another message that the cat is sleeping. This is not a contradiction, as the messages are by default separate "worlds" that should be interpreted independently.
 
-[=RDF Message Stream Profiles=] can be used to indicate that messages should be interpreted in a broader scope. For example, a profile may indicate that all messages in a stream should be interpreted together. In this case, it could be concluded that the cat is running and sleeping at the same time, which is a contradiction.
+An [=RDF Message Stream Profile=] may indicate that all messages in a stream should be interpreted together. In this case, it could be concluded that the cat is running and sleeping at the same time, which is a contradiction.
+</div>
+
+## RDF Message Stream Producers and Consumers ## {#producers-consumers}
+
+An <dfn>RDF Message Stream Producer</dfn> can make an [=RDF Message Stream=] available to be consumed by an <dfn>RDF Message Stream Consumer</dfn> using a stream protocol.
+
+The underlying stream protocol is out of scope of this specification. It can be for example [[!WebSockets]], [[!LDN]], [[!EventSource]], [Linked Data Event Streams](https://w3id.org/ldes/specification), [Jelly gRPC](https://w3id.org/jelly/), [MQTT](https://mqtt.org/), or a programming language-specific stream interface that carries [=RDF Messages=], or a collection or stream of RDF Quads.
+
+Stream protocols used for [=RDF Message Streams=] may support any streaming semantics, such as delivery guarantees, ordering, and flow control (pull-based, push-based, etc.).
+
+Note: An RDF Message Stream can be created ad-hoc, and describes only one specific "instance" of a stream. This allows streaming protocols to have freedom in how they manage ordering, stream lifecycle, delivery guarantees, flow control, and other streaming semantics. See the examples below for more details.
+
+<div class="example">
+An HTTP server exposes a file at `https://example.org/stream`. This file contains an [=RDF Message Log=] serialization of an [=RDF Message Stream=]. A client can consume the stream by sending an HTTP GET request to that URL, and parsing the response as an [=RDF Message Stream=].
+
+In this example, the server is the **stream producer**, and the client is the **stream consumer**. The stream protocol is HTTP. The RDF Message Stream only exists over the course of the HTTP request.
+</div>
+
+<div class="example">
+An MQTT broker ([[mqtt-5]]) hosts a topic `iot/temparature` to which RDF Messages are published by an IoT thermometer. Multiple clients, at different points in time, subscribe to that topic to consume the RDF Messages being published. Because of the used Quality-of-Service settings (QoS 0), some messages maybe be lost or reordered, resulting in different clients seeing different subsets of the messages published on the topic.
+
+In this example:
+
+- The IoT thermometer is a **stream producer** that produces an [=RDF Message Stream=] by publishing RDF Messages to the MQTT broker, which acts as the **stream consumer**.
+- For each individual client, the MQTT broker is a **stream producer** that produces an [=RDF Message Stream=] by sending RDF Messages to the client, which acts as the **stream consumer**.
+
+For example, for 5 clients subscribing to the topic, there would be 6 different [=RDF Message Streams=]: one from the IoT thermometer to the MQTT broker, and one from the MQTT broker to each of the 5 clients. Each of these streams may have different messages in them and have a different order, due to the Quality-of-Service settings and the clients subscribing to the stream at different points in time.
+
+Note that here we are discussing the RDF Message Stream from the perspective of the consumers. If some messages are lost between the producer and the consumer, then the two parties observe effectively two different streams.
+</div>
+
+Issue: Add a diagram illustrating RDF Messages, an RDF Message Stream, stream producers, and stream consumers.
+
+Issue: Find out and document the similarities/differences to the [RDF-JS Stream interface](https://rdf.js.org/stream-spec/)
 
 ## RDF Message Logs ## {#rdf-message-logs}
 
@@ -131,7 +152,7 @@ Note: Blank node identifiers in RDF Message Streams and RDF Message Logs are sco
 # Serializing and parsing RDF Message Logs # {#rdf-message-logs-serialization}
 
 In this specification we propose that all RDF serializations MUST implement a way to group quads into [=RDF Messages=].
-This way, a [=stream consumer=] can write the stream into an [=RDF Message Log=] that can be read again by a [=stream producer=] into an [=RDF Message Stream=].
+This way, a [=RDF Message Stream Consumer=] can write the stream into an [=RDF Message Log=] that can be read again by a [=RDF Message Stream Producer=] into an [=RDF Message Stream=].
 
 Note: While we do define content types for the RDF Message Log serialization formats, this does not imply that the serialization needs to be used over HTTP only. The use of alternative transport mechanisms is equally valid and encouraged.
 
@@ -309,3 +330,24 @@ As an alternative, [Jelly-RDF](https://w3id.org/jelly) distributions are also av
 A [Nanopublication](https://nanopub.net/) is a small RDF dataset that contains an assertion, its provenance, and publication information. Nanopublications are stored and exchanged by a network of services (registries and query endpoints). Exchanging each Nanopublication individually leads to significant overhead, due to repeated HTTP requests necessitated by the lack of a format for grouping multiple Nanopublications together. This issue was resolved by using [Jelly](https://w3id.org/jelly/) to serialize multiple Nanopublications into a single byte stream, where each Nanopublication corresponds to a [Jelly frame](https://w3id.org/jelly/dev/user-guide/#stream-frames).
 
 Using an [=RDF Message Log=] serialization to group multiple Nanopublications into a single file would also solve this problem, while still allowing each Nanopublication to be processed individually as an [=RDF Message=].
+
+
+<pre class=biblio>
+{
+  "mqtt-5": {
+    "authors": [
+      "Andrew Banks",
+      "Ed Briggs",
+      "Ken Borgendale",
+      "Rahul Gupta"
+    ],
+    "href": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html",
+    "title": "MQTT Version 5.0",
+    "status": "OASIS Standard",
+    "publisher": "OASIS",
+    "deliveredBy": [
+      "https://www.oasis-open.org/committees/mqtt/"
+    ]
+  }
+}
+</pre>
