@@ -149,6 +149,71 @@ Note: A producer may want to indicate that a certain property is used to indicat
 
 Note: Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.
 
+## Version labels and version announcement ## {#version-labels}
+
+RDF 1.2 [[!rdf12-concepts]] defines version labels, which identify the syntax and semantics conformance for the RDF data. RDF 1.2 defines three version labels: "1.1", "1.2", and "1.2-basic". RDF Messages extends this scheme with three new version labels, TODO
+
+<figure class=table>
+<figcaption class=table>Version labels for RDF Messages.</figcaption>
+<table class=simple>
+  <thead>
+    <tr>
+      <th>Version label</th>
+      <th>Base syntax</th>
+      <th>Triple terms</th>
+      <th>RDF Messages</th>
+      <th>Semantics</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>"1.2-messages"</td>
+      <td>RDF 1.2</td>
+      <td>yes</td>
+      <td><strong>yes</strong></td>
+      <td>[[!rdf12-semantics]]</td>
+    </tr>
+    <tr>
+      <td>"1.2"</td>
+      <td>RDF 1.2</td>
+      <td>yes</td>
+      <td>no</td>
+      <td>[[!rdf12-semantics]]</td>
+    </tr>
+    <tr>
+      <td>"1.2-basic-messages"</td>
+      <td>RDF 1.2</td>
+      <td>no</td>
+      <td><strong>yes</strong></td>
+      <td>[[!rdf12-semantics]]</td>
+    </tr>
+    <tr>
+      <td>"1.2-basic"</td>
+      <td>RDF 1.2</td>
+      <td>no</td>
+      <td>no</td>
+      <td>[[!rdf12-semantics]]</td>
+    </tr>
+    <tr>
+      <td>"1.1-messages"</td>
+      <td>RDF 1.1</td>
+      <td>no</td>
+      <td><strong>yes</strong></td>
+      <td>[[!rdf11-semantics]]</td>
+    </tr>
+    <tr>
+      <td>"1.1"</td>
+      <td>RDF 1.1</td>
+      <td>no</td>
+      <td>no</td>
+      <td>[[!rdf11-semantics]]</td>
+    </tr>
+  </tbody>
+</table>
+</figure>
+
+
+
 # Serializing and parsing RDF Message Logs # {#rdf-message-logs-serialization}
 
 In this specification we propose that all RDF serializations MUST implement a way to group quads into [=RDF Messages=].
@@ -351,3 +416,8 @@ Using an [=RDF Message Log=] serialization to group multiple Nanopublications in
   }
 }
 </pre>
+
+<style>
+table { border-collapse: collapse }
+table.simple td, table th { border: 1px solid #444; padding: 0.2em 0.5em; }
+</style>
