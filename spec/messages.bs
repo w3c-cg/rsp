@@ -149,9 +149,9 @@ Note: A producer may want to indicate that a certain property is used to indicat
 
 Note: Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.
 
-## Version labels and version announcement ## {#version-labels}
+## Version labels ## {#version-labels}
 
-RDF 1.2 [[!rdf12-concepts]] defines version labels, which identify the syntax and semantics conformance for the RDF data. RDF 1.2 defines three version labels: "1.1", "1.2", and "1.2-basic". RDF Messages extends this scheme with three new version labels, TODO
+RDF 1.2 [[!rdf12-concepts]] defines version labels, which identify the syntax and semantics conformance for the RDF data. RDF 1.2 defines three version labels: "1.1", "1.2", and "1.2-basic". RDF Messages extends this scheme with three new version labels, as shown in the table below.
 
 <figure class=table>
 <figcaption class=table>Version labels for RDF Messages.</figcaption>
@@ -169,14 +169,14 @@ RDF 1.2 [[!rdf12-concepts]] defines version labels, which identify the syntax an
     <tr>
       <td>"1.2-messages"</td>
       <td>RDF 1.2</td>
-      <td>yes</td>
+      <td><strong>yes</strong></td>
       <td><strong>yes</strong></td>
       <td>[[!rdf12-semantics]]</td>
     </tr>
     <tr>
       <td>"1.2"</td>
       <td>RDF 1.2</td>
-      <td>yes</td>
+      <td><strong>yes</strong></td>
       <td>no</td>
       <td>[[!rdf12-semantics]]</td>
     </tr>
@@ -199,18 +199,26 @@ RDF 1.2 [[!rdf12-concepts]] defines version labels, which identify the syntax an
       <td>RDF 1.1</td>
       <td>no</td>
       <td><strong>yes</strong></td>
-      <td>[[!rdf11-semantics]]</td>
+      <!-- TODO: fix bibliography -->
+      <td>rdf11-semantics</td>
     </tr>
     <tr>
       <td>"1.1"</td>
       <td>RDF 1.1</td>
       <td>no</td>
       <td>no</td>
-      <td>[[!rdf11-semantics]]</td>
+      <!-- TODO: fix bibliography -->
+      <td>rdf11-semantics</td>
     </tr>
   </tbody>
 </table>
 </figure>
+
+Data conforming to version labels without the "-messages" suffix is valid as data with version with this suffix added. For example, data conforming to version "1.2" is also valid as data with version "1.2-messages".
+
+Additionally, same conformance rules as defined for the "1.1", "1.2", and "1.2-basic" version labels apply to the "1.1-messages", "1.2-messages", and "1.2-basic-messages" version labels, respectively. Namely, data conforming to version "1.1-messages" is valid as data with version "1.2-basic-messages", and data conforming to version "1.2-basic-messages" is valid as data with version "1.2-messages".
+
+Version announcement should be done using the mechanisms defined in [[!rdf12-concepts]]: the `version` parameter in the `Content-Type` and `Accept` headers for HTTP, and the serialization format-specific in-line version announcements (e.g., `VERSION` in Turtle).
 
 
 
@@ -221,7 +229,49 @@ This way, a [=RDF Message Stream Consumer=] can write the stream into an [=RDF M
 
 Note: While we do define content types for the RDF Message Log serialization formats, this does not imply that the serialization needs to be used over HTTP only. The use of alternative transport mechanisms is equally valid and encouraged.
 
-## N-Triples, N-Quads, Turtle and TriG ## {#turtle}
+## N-Triples, N-Quads, Turtle, and TriG ## {#turtle}
+
+We propose to extend the existing N-Triples, N-Quads, Turtle, and TriG formats to support RDF Messages. These extended formats are NOT backwards-compatible with existing parsers, as they require support for the new [[#message-delimiters]] syntax.
+
+### Version announcement ### {#version-announcement}
+
+Concrete RDF syntaxes (e.g., [[!rdf12-turtle]]) are being revised in RDF 1.2 to support in-line version announcements. This allows for communicating to the parser which features of the syntax are used in the file.
+
+We extend this mechanism by adding three new version labels for RDF syntaxes that support RDF Messages (see [[#version-labels]]). If a parser encounters a version label with the "-messages" suffix, it should expect the file to `MESSAGE` directives. Therefore, if the parser does not support RDF Messages, it should reject the file as invalid.
+
+In N-Triples ([[!rdf12-n-triples]]) and N-Quads ([[!rdf12-n-quads]]), the version announcement has one legal form (`VERSION`):
+
+<div class="example">
+```turtle
+VERSION "1.2-messages"
+<http://example.org/spiderman> <http://example.org/enemyOf> <http://example.org/green-goblin> .
+```
+</div>
+
+In Turtle ([[!rdf12-turtle]]) and TriG ([[!rdf12-trig]]), the version announcement can be done in the same manner:
+
+<div class="example">
+```turtle
+VERSION "1.2-basic-messages"
+PREFIX ex: <http://example.org/>
+ex:spiderman ex:enemyOf ex:green-goblin .
+```
+</div>
+
+Or, alternatively, with the old-style `@version` directive:
+
+<div class="example">
+```turtle
+@version "1.1-messages" .
+@prefix ex: <http://example.org/> .
+ex:spiderman ex:enemyOf ex:green-goblin .
+```
+</div>
+
+### Message delimiters ### {#message-delimiters}
+
+TODO
+
 
 The RDF serializations are either way being revised in the upcoming RDF 1.2 specification, in which [version labels](https://www.w3.org/TR/rdf12-concepts/#defined-version-labels) are proposed.
 This is a proposal to the working group to include this concept by including yet another `content-type` directive as follows: `Content-Type: application/trig; version=1.2; messages=rdfm`.
