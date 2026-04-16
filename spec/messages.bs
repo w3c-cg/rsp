@@ -270,21 +270,114 @@ ex:spiderman ex:enemyOf ex:green-goblin .
 
 ### Message delimiters ### {#message-delimiters}
 
-TODO
+When the version label of the document being parsed has the "-messages" suffix, the parser MUST:
 
+ 1. Consider every triple or quad in the document as part of an [=RDF Message=]. The document does not need to start with a delimiter.
+ 2. Triples or quads are added to the current message as long as no delimiter or EOF has been encountered.
+ 3. When a delimiter was encountered, the current [=RDF Message=] is finalized. The next message is opened only if a triple or quad is encountered after the delimiter.
+ 4. If a delimiter is encountered before any triple or quad in the document, that means that the first message is empty.
+ 5. When the end of the file is reached, the current [=RDF Message=] is finalized.
 
-The RDF serializations are either way being revised in the upcoming RDF 1.2 specification, in which [version labels](https://www.w3.org/TR/rdf12-concepts/#defined-version-labels) are proposed.
-This is a proposal to the working group to include this concept by including yet another `content-type` directive as follows: `Content-Type: application/trig; version=1.2; messages=rdfm`.
-This indicates that the messages are following this spec in this HTTP Response. Clients that do not rely on [=RDF Messages=] can still interpret the response as regular RDF 1.2 data.
+For N-Triples and N-Quads, the `directive` grammar production is extended as follows:
 
-When the `content-type` flagged the support for messages, and a parser is in message mode, it MUST:
- 1. Consider every triple in the document as part of an [=RDF Message=]. The document does not need to start with a delimiter. If it does start with a delimiter, the content after the delimiter is part of the first message and the document did not start with an empty message.
- 2. Triples are added to the current message as long as no delimiter or EOF has been encountered.
- 3. When a delimiter was encountered, the current [=RDF Message=] is finalized and a next one is opened.
+```
+directive        ::= versionDirective | messageDirective
+messageDirective ::= 'MESSAGE'
+```
 
-The delimiter is a comment in the document that matches this regex: `/^\s*@message/`.
+Issue: Figure out how to format EBNF listings.
 
-Issue: Should we allow repeated `BASE` and `PREFIX` directives in Turtle / TriG RDF Message Logs? Should they override the previously encountered directives? This may require additional work in the parser.
+For example, this is an N-Triples file with two messages:
+
+<div class="example">
+```turtle
+VERSION "1.2-messages"
+<http://example.org/message_1> <http://example.org/hasValue> "Hello, world!" .
+<http://example.org/message_1> <http://example.org/hasNumber> "1" .
+MESSAGE
+<http://example.org/message_2> <http://example.org/hasValue> "Goodbye, world!" .
+```
+</div>
+
+This is a file with one empty message followed by one message with two triples:
+
+<div class="example">
+```turtle
+VERSION "1.2-messages"
+MESSAGE
+<http://example.org/message_1> <http://example.org/hasValue> "Hello, world!" .
+<http://example.org/message_1> <http://example.org/hasNumber> "2" .
+```
+</div>
+
+And this is a file with only one message with one triple:
+
+<div class="example">
+```turtle
+VERSION "1.2-messages"
+<http://example.org/message_1> <http://example.org/hasValue> "Hello, world!" .
+MESSAGE
+```
+</div>
+
+For Turtle and TriG, the `directive` grammar production is extended as follows:
+
+```
+directive     ::= prefixID | base | version | message
+                  | sparqlPrefix | sparqlBase | sparqlVersion | sparqlMessage
+message       ::= '@message' '.'
+sparqlMessage ::= 'MESSAGE'
+```
+
+For example, this is a TriG file with two messages:
+
+<div class="example">
+```turtle
+VERSION "1.2-messages"
+PREFIX ex: <http://example.org/>
+ex:message_1 {
+  ex:person ex:says "Hello, world!" ;
+}
+ex:message_1 ex:hasNumber 1 .
+MESSAGE
+ex:message_2 {
+  ex:person ex:says "Goodbye, world!" ;
+}
+ex:message_2 ex:hasNumber 2 .
+MESSAGE
+```
+</div>
+
+And this is a Turtle file with two messages in the old-style syntax:
+
+<div class="example">
+```turtle
+@version "1.2-messages" .
+@prefix ex: <http://example.org/> .
+ex:person ex:says "Hello, world!" .
+@message .
+ex:person ex:says "Goodbye, world!" .
+```
+</div>
+
+### Repeated PREFIX and BASE directives ### {#prefixes-and-base-iris}
+
+Repated `PREFIX` and `BASE` directives are allowed in Turtle and TriG RDF Message Logs – see [Example 12 in RDF 1.2 Turtle](https://www.w3.org/TR/rdf12-turtle/#ex-turtle-abbreviations). If, for example, `PREFIX ex:` is defined in the document, and then later `PREFIX ex:` is defined again with a different IRI, the second definition will override the first one for the rest of the document.
+
+Similarly, repeated `PREFIX` and `BASE` directives are allowed in RDF Message Logs, making it possible to easily concatenate Turtle / TriG files into RDF Message Logs.
+
+In this example, the first message uses the `ex:` prefix to refer to `http://example.org/`, while the second message uses the same prefix to refer to `http://different-iri.org/`:
+
+<div class="example">
+```turtle
+VERSION "1.2-messages"
+PREFIX ex: <http://example.org/>
+ex:person ex:says "Hello, world!" .
+MESSAGE
+PREFIX ex: <http://different-iri.org/>
+ex:person ex:says "Goodbye, world!" .
+```
+</div>
 
 ## JSON-LD ## {#json-ld}
 
