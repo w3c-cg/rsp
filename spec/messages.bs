@@ -127,13 +127,13 @@ The log can be serialized from an [=RDF Message Stream=], and/or deserialized in
 # a message defining the context
 ex:Stream1 a ex:Dataset;
     rdfs:comment "A log of messages that appeared on a stream" .
-# @message a next message is an observation in the stream
+MESSAGE # a next message is an observation in the stream
 ex:Observation1
     a sosa:Observation ;
     sosa:resultTime "2026-01-01T00:00:00Z"^^xsd:dateTime ;
     sosa:hasSimpleResult "..." .
-# @message an empty message
-# @message another observation
+MESSAGE # an empty message
+MESSAGE # another observation
 ex:Observation2
     a sosa:Observation ;
     sosa:resultTime "2026-01-01T00:10:00Z"^^xsd:dateTime ;
