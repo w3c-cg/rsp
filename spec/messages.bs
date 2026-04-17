@@ -147,7 +147,7 @@ Issue: Can we provide an example of an RDF Message Log that does not use any of 
 
 Note: A producer may want to indicate that a certain property is used to indicate the timestamp of when the message was created. This can be done, for example, using `ldes:timestampPath` from [Linked Data Event Streams](https://w3id.org/ldes/specification). Alternatively, when vocabularies such as ActivityStreams, SSN/SOSA, or PROV-O are used, one can just assume the respective properties `as:published`, `sosa:resultTime`, or `prov:generatedAtTime` are going to be used for this purpose.
 
-Note: Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.
+Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.
 
 ## Version labels ## {#version-labels}
 
@@ -220,6 +220,26 @@ Additionally, same conformance rules as defined for the "1.1", "1.2", and "1.2-b
 
 Version announcement should be done using the mechanisms defined in [[!rdf12-concepts]]: the `version` parameter in the `Content-Type` and `Accept` headers for HTTP, and the serialization format-specific in-line version announcements (e.g., `VERSION` in Turtle).
 
+<div class="example">
+Requesting an N-Triples RDF Message Log with RDF 1.2 semantics and support for triple terms:
+
+```http
+GET /message-log.nt HTTP/1.1
+Host: example.org
+Accept: application/n-triples; version=1.2-messages
+```
+</div>
+
+<div class="example">
+Requesting a TriG RDF Message Log with RDF 1.1 semantics:
+
+```http
+GET /message-log.trig HTTP/1.1
+Host: example.org
+Accept: application/trig; version=1.1-messages
+```
+</div>
+
 
 
 # Serializing and parsing RDF Message Logs # {#rdf-message-logs-serialization}
@@ -268,24 +288,24 @@ ex:spiderman ex:enemyOf ex:green-goblin .
 ```
 </div>
 
+
+
 ### Message delimiters ### {#message-delimiters}
 
 When the version label of the document being parsed has the "-messages" suffix, the parser MUST:
 
- 1. Consider every triple or quad in the document as part of an [=RDF Message=]. The document does not need to start with a delimiter.
+ 1. Consider every triple or quad in the document as part of an [=RDF Message=].
  2. Triples or quads are added to the current message as long as no delimiter or EOF has been encountered.
- 3. When a delimiter was encountered, the current [=RDF Message=] is finalized. The next message is opened only if a triple or quad is encountered after the delimiter.
+ 3. When a delimiter is encountered, the current [=RDF Message=] is finalized. The next message is opened only if a triple, quad, or another delimiter is encountered after the current delimiter.
  4. If a delimiter is encountered before any triple or quad in the document, that means that the first message is empty.
  5. When the end of the file is reached, the current [=RDF Message=] is finalized.
 
 For N-Triples and N-Quads, the `directive` grammar production is extended as follows:
 
-```
+```ebnf
 directive        ::= versionDirective | messageDirective
 messageDirective ::= 'MESSAGE'
 ```
-
-Issue: Figure out how to format EBNF listings.
 
 For example, this is an N-Triples file with two messages:
 
@@ -322,7 +342,7 @@ MESSAGE
 
 For Turtle and TriG, the `directive` grammar production is extended as follows:
 
-```
+```ebnf
 directive     ::= prefixID | base | version | message
                   | sparqlPrefix | sparqlBase | sparqlVersion | sparqlMessage
 message       ::= '@message' '.'
@@ -360,6 +380,8 @@ ex:person ex:says "Goodbye, world!" .
 ```
 </div>
 
+Note: Because blank node identifiers are scoped to the message they occur in, the same blank node identifier can be used in different messages without causing collisions. Typically parsers that insert triples/quads into an RDF store remap blank node identifiers from the parsed file to internal identifiers. To implement RDF Messages, parsers should reset their blank node identifier mapping when a message delimiter is encountered, so that the same blank node identifier can be reused in the next message in the log without causing collisions.
+
 ### Repeated PREFIX and BASE directives ### {#prefixes-and-base-iris}
 
 Repated `PREFIX` and `BASE` directives are allowed in Turtle and TriG RDF Message Logs – see [Example 12 in RDF 1.2 Turtle](https://www.w3.org/TR/rdf12-turtle/#ex-turtle-abbreviations). If, for example, `PREFIX ex:` is defined in the document, and then later `PREFIX ex:` is defined again with a different IRI, the second definition will override the first one for the rest of the document.
@@ -378,6 +400,8 @@ PREFIX ex: <http://different-iri.org/>
 ex:person ex:says "Goodbye, world!" .
 ```
 </div>
+
+
 
 ## JSON-LD ## {#json-ld}
 
