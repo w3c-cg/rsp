@@ -1488,10 +1488,14 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
+  <meta content="Bikeshed version 5d4d5b9a8, updated Fri Apr 17 13:49:40 2026 -0700" name="generator">
   <link href="https://w3c-cg.github.io/rsp/spec/messages" rel="canonical">
-  <meta content="5034ea01f76e883ab6efad9e6d450ee7f47822d0" name="revision">
+  <meta content="2b78134fdf6176570e90b8970ef0ec4658079c04" name="revision">
   <meta content="dark light" name="color-scheme">
+<style>
+table { border-collapse: collapse }
+table.simple td, table th { border: 1px solid #444; padding: 0.2em 0.5em; }
+</style>
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -1785,7 +1789,7 @@ pre .property::before, pre .property::after {
 </style>
 <style>/* Boilerplate: style-counters */
 body {
-    counter-reset: example figure issue;
+    counter-reset: example figure issue table;
 }
 .issue {
     counter-increment: issue;
@@ -1810,6 +1814,13 @@ figcaption {
 }
 figcaption:not(.no-marker)::before {
     content: "Figure " counter(figure) " ";
+}
+
+figure.table figcaption {
+    counter-increment: table;
+}
+figure.table figcaption:not(.no-marker)::before {
+    content: "Table " counter(table) " ";
 }
 </style>
 <style>/* Boilerplate: style-dfn-panel */
@@ -2167,13 +2178,37 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     c-[vm] { color: #cb4b16 } /* Name.Variable.Magic */
     c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
 }
+
+@media print {
+    /* Darken colors for print that would otherwise print too faintly */
+    c-[c]  { color: #555555 } /* Comment */
+    c-[d]  { color: #555555 } /* Comment.Multiline */
+    c-[cp] { color: #555555 } /* Comment.Preproc */
+    c-[c1] { color: #555555 } /* Comment.Single */
+    c-[cs] { color: #555555 } /* Comment.Special */
+    c-[o]  { color: #222222 } /* Operator */
+    c-[p]  { color: #222222 } /* Punctuation */
+    c-[ow] { color: #222222 } /* Operator.Word */
+    c-[s]  { color: #664400 } /* Literal.String */
+    c-[t]  { color: #664400 } /* Literal.String.Single */
+    c-[u]  { color: #664400 } /* Literal.String.Double */
+    c-[sb] { color: #664400 } /* Literal.String.Backtick */
+    c-[sc] { color: #664400 } /* Literal.String.Char */
+    c-[sd] { color: #664400 } /* Literal.String.Doc */
+    c-[se] { color: #664400 } /* Literal.String.Escape */
+    c-[sh] { color: #664400 } /* Literal.String.Heredoc */
+    c-[si] { color: #664400 } /* Literal.String.Interpol */
+    c-[sx] { color: #664400 } /* Literal.String.Other */
+    c-[sr] { color: #664400 } /* Literal.String.Regex */
+    c-[ss] { color: #664400 } /* Literal.String.Symbol */
+}
 </style>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">RDF Messages</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-04-07">7 April 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-04-23">23 April 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2190,7 +2225,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 7 April 2026,
+In addition, as of 23 April 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2214,11 +2249,18 @@ Parts of this work may be from another specification document.  If so, those par
       <li><a href="#scope"><span class="secno">1.3</span> <span class="content">Scope of RDF Messages</span></a>
       <li><a href="#producers-consumers"><span class="secno">1.4</span> <span class="content">RDF Message Stream Producers and Consumers</span></a>
       <li><a href="#rdf-message-logs"><span class="secno">1.5</span> <span class="content">RDF Message Logs</span></a>
+      <li><a href="#version-labels"><span class="secno">1.6</span> <span class="content">Version labels</span></a>
      </ol>
     <li>
      <a href="#rdf-message-logs-serialization"><span class="secno">2</span> <span class="content">Serializing and parsing RDF Message Logs</span></a>
      <ol class="toc">
-      <li><a href="#turtle"><span class="secno">2.1</span> <span class="content">N-Triples, N-Quads, Turtle and TriG</span></a>
+      <li>
+       <a href="#turtle"><span class="secno">2.1</span> <span class="content">N-Triples, N-Quads, Turtle, and TriG</span></a>
+       <ol class="toc">
+        <li><a href="#version-announcement"><span class="secno">2.1.1</span> <span class="content">Version announcement</span></a>
+        <li><a href="#message-delimiters"><span class="secno">2.1.2</span> <span class="content">Message delimiters</span></a>
+        <li><a href="#prefixes-and-base-iris"><span class="secno">2.1.3</span> <span class="content">Repeated PREFIX and BASE directives</span></a>
+       </ol>
       <li><a href="#json-ld"><span class="secno">2.2</span> <span class="content">JSON-LD</span></a>
       <li><a href="#yaml-ld"><span class="secno">2.3</span> <span class="content">YAML-LD</span></a>
       <li><a href="#rdf-xml"><span class="secno">2.4</span> <span class="content">RDF/XML</span></a>
@@ -2244,7 +2286,7 @@ Parts of this work may be from another specification document.  If so, those par
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
       <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
-      <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
+      <li><a href="#informative"><span class="secno"></span> <span class="content">Non-Normative References</span></a>
      </ol>
     <li><a href="#issues-index"><span class="secno"></span> <span class="content">Issues Index</span></a>
    </ol>
@@ -2336,17 +2378,17 @@ An MQTT broker (<a data-link-type="biblio" href="#biblio-mqtt-5" title="MQTT Ver
    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="rdf-message-log">RDF Message Log</dfn> is a static representation of an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream⑧">RDF Message Stream</a>, which can be used for archiving, sharing, and processing the messages in the stream at a later point in time.</p>
    <p>The log can be serialized from an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream⑨">RDF Message Stream</a>, and/or deserialized into an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream①⓪">RDF Message Stream</a>.</p>
    <figure>
-    <div class="example" id="example-d2dc4e98">
+    <div class="example" id="example-6bfa39ec">
 <pre class="highlight language-turtle"><c- c># a message defining the context</c->
 <c- nn>ex</c-><c- p>:</c-><c- f>Stream1</c-> <c- b>a</c-> <c- nn>ex</c-><c- p>:</c-><c- f>Dataset</c-><c- p>;</c->
     <c- nn>rdfs</c-><c- p>:</c-><c- f>comment</c-> <c- s>"A log of messages that appeared on a stream"</c-> <c- p>.</c->
-<c- c># @message a next message is an observation in the stream</c->
+MESSAGE <c- c># a next message is an observation in the stream</c->
 <c- nn>ex</c-><c- p>:</c-><c- f>Observation1</c->
     <c- b>a</c-> <c- nn>sosa</c-><c- p>:</c-><c- f>Observation</c-> <c- p>;</c->
     <c- nn>sosa</c-><c- p>:</c-><c- f>resultTime</c-> <c- s>"2026-01-01T00:00:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
     <c- nn>sosa</c-><c- p>:</c-><c- f>hasSimpleResult</c-> <c- s>"..."</c-> <c- p>.</c->
-<c- c># @message an empty message</c->
-<c- c># @message another observation</c->
+MESSAGE <c- c># an empty message</c->
+MESSAGE <c- c># another observation</c->
 <c- nn>ex</c-><c- p>:</c-><c- f>Observation2</c->
     <c- b>a</c-> <c- nn>sosa</c-><c- p>:</c-><c- f>Observation</c-> <c- p>;</c->
     <c- nn>sosa</c-><c- p>:</c-><c- f>resultTime</c-> <c- s>"2026-01-01T00:10:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
@@ -2357,26 +2399,215 @@ An MQTT broker (<a data-link-type="biblio" href="#biblio-mqtt-5" title="MQTT Ver
    </figure>
    <p class="issue" id="issue-3e872813"><a class="self-link" href="#issue-3e872813"></a> Can we provide an example of an RDF Message Log that does not use any of the formats that we define in the next section, to illustrate the concept of an RDF Message Log without relying on the syntax of a specific format?</p>
    <p class="note" role="note"><span class="marker">Note:</span> A producer may want to indicate that a certain property is used to indicate the timestamp of when the message was created. This can be done, for example, using <code>ldes:timestampPath</code> from <a href="https://w3id.org/ldes/specification">Linked Data Event Streams</a>. Alternatively, when vocabularies such as ActivityStreams, SSN/SOSA, or PROV-O are used, one can just assume the respective properties <code>as:published</code>, <code>sosa:resultTime</code>, or <code>prov:generatedAtTime</code> are going to be used for this purpose.</p>
-   <p class="note" role="note"><span class="marker">Note:</span> Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.</p>
+   <p>Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.</p>
+   <h3 class="heading settled" data-level="1.6" id="version-labels"><span class="secno">1.6. </span><span class="content">Version labels</span><a class="self-link" href="#version-labels"></a></h3>
+   <p>RDF 1.2 <a data-link-type="biblio" href="#biblio-rdf12-concepts" title="RDF 1.2 Concepts and Abstract Data Model">[rdf12-concepts]</a> defines version labels, which identify the syntax and semantics conformance for the RDF data. RDF 1.2 defines three version labels: "1.1", "1.2", and "1.2-basic". RDF Messages extends this scheme with three new version labels, as shown in the table below.</p>
+   <figure class="table">
+    <figcaption class="table">Version labels for RDF Messages.</figcaption>
+    <table class="simple">
+     <thead>
+      <tr>
+       <th>Version label
+       <th>Base syntax
+       <th>Triple terms
+       <th>RDF Messages
+       <th>Semantics
+     <tbody>
+      <tr>
+       <td>"1.2-messages"
+       <td>RDF 1.2
+       <td><strong>yes</strong>
+       <td><strong>yes</strong>
+       <td><a data-link-type="biblio" href="#biblio-rdf12-semantics" title="RDF 1.2 Semantics">[rdf12-semantics]</a>
+      <tr>
+       <td>"1.2"
+       <td>RDF 1.2
+       <td><strong>yes</strong>
+       <td>no
+       <td><a data-link-type="biblio" href="#biblio-rdf12-semantics" title="RDF 1.2 Semantics">[rdf12-semantics]</a>
+      <tr>
+       <td>"1.2-basic-messages"
+       <td>RDF 1.2
+       <td>no
+       <td><strong>yes</strong>
+       <td><a data-link-type="biblio" href="#biblio-rdf12-semantics" title="RDF 1.2 Semantics">[rdf12-semantics]</a>
+      <tr>
+       <td>"1.2-basic"
+       <td>RDF 1.2
+       <td>no
+       <td>no
+       <td><a data-link-type="biblio" href="#biblio-rdf12-semantics" title="RDF 1.2 Semantics">[rdf12-semantics]</a>
+      <tr>
+       <td>"1.1-messages"
+       <td>RDF 1.1
+       <td>no
+       <td><strong>yes</strong>
+       <td>rdf11-semantics
+      <tr>
+       <td>"1.1"
+       <td>RDF 1.1
+       <td>no
+       <td>no
+       <td>rdf11-semantics
+    </table>
+   </figure>
+   <p>Data conforming to version labels without the "-messages" suffix is valid as data with version with this suffix added. For example, data conforming to version "1.2" is also valid as data with version "1.2-messages".</p>
+   <p>Additionally, same conformance rules as defined for the "1.1", "1.2", and "1.2-basic" version labels apply to the "1.1-messages", "1.2-messages", and "1.2-basic-messages" version labels, respectively. Namely, data conforming to version "1.1-messages" is valid as data with version "1.2-basic-messages", and data conforming to version "1.2-basic-messages" is valid as data with version "1.2-messages".</p>
+   <p>Version announcement should be done using the mechanisms defined in <a data-link-type="biblio" href="#biblio-rdf12-concepts" title="RDF 1.2 Concepts and Abstract Data Model">[rdf12-concepts]</a>: the <code>version</code> parameter in the <code>Content-Type</code> and <code>Accept</code> headers for HTTP, and the serialization format-specific in-line version announcements (e.g., <code>VERSION</code> in Turtle).</p>
+   <div class="example" id="example-47c51694">
+    <a class="self-link" href="#example-47c51694"></a>
+Requesting an N-Triples RDF Message Log with RDF 1.2 semantics and support for triple terms:
+
+
+<pre class="highlight language-http"><c- nf>GET</c-> <c- nn>/message-log.nt</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Host</c-><c- o>:</c-> <c- l>example.org</c->
+<c- e>Accept</c-><c- o>:</c-> <c- l>application/n-triples; version=1.2-messages</c->
+</pre>
+   </div>
+   <div class="example" id="example-7cfb0467">
+    <a class="self-link" href="#example-7cfb0467"></a>
+Requesting a TriG RDF Message Log with RDF 1.1 semantics:
+
+
+<pre class="highlight language-http"><c- nf>GET</c-> <c- nn>/message-log.trig</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Host</c-><c- o>:</c-> <c- l>example.org</c->
+<c- e>Accept</c-><c- o>:</c-> <c- l>application/trig; version=1.1-messages</c->
+</pre>
+   </div>
    <h2 class="heading settled" data-level="2" id="rdf-message-logs-serialization"><span class="secno">2. </span><span class="content">Serializing and parsing RDF Message Logs</span><a class="self-link" href="#rdf-message-logs-serialization"></a></h2>
    <p>In this specification we propose that all RDF serializations MUST implement a way to group quads into <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message④">RDF Messages</a>.
 This way, a <a data-link-type="dfn" href="#rdf-message-stream-consumer" id="ref-for-rdf-message-stream-consumer">RDF Message Stream Consumer</a> can write the stream into an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log②">RDF Message Log</a> that can be read again by a <a data-link-type="dfn" href="#rdf-message-stream-producer" id="ref-for-rdf-message-stream-producer">RDF Message Stream Producer</a> into an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream①①">RDF Message Stream</a>.</p>
    <p class="note" role="note"><span class="marker">Note:</span> While we do define content types for the RDF Message Log serialization formats, this does not imply that the serialization needs to be used over HTTP only. The use of alternative transport mechanisms is equally valid and encouraged.</p>
-   <h3 class="heading settled" data-level="2.1" id="turtle"><span class="secno">2.1. </span><span class="content">N-Triples, N-Quads, Turtle and TriG</span><a class="self-link" href="#turtle"></a></h3>
-   <p>The RDF serializations are either way being revised in the upcoming RDF 1.2 specification, in which <a href="https://www.w3.org/TR/rdf12-concepts/#defined-version-labels">version labels</a> are proposed.
-This is a proposal to the working group to include this concept by including yet another <code>content-type</code> directive as follows: <code>Content-Type: application/trig; version=1.2; messages=rdfm</code>.
-This indicates that the messages are following this spec in this HTTP Response. Clients that do not rely on <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑤">RDF Messages</a> can still interpret the response as regular RDF 1.2 data.</p>
-   <p>When the <code>content-type</code> flagged the support for messages, and a parser is in message mode, it MUST:</p>
+   <h3 class="heading settled" data-level="2.1" id="turtle"><span class="secno">2.1. </span><span class="content">N-Triples, N-Quads, Turtle, and TriG</span><a class="self-link" href="#turtle"></a></h3>
+   <p>We propose to extend the existing N-Triples, N-Quads, Turtle, and TriG formats to support RDF Messages. These extended formats are NOT backwards-compatible with existing parsers, as they require support for the new <a href="#message-delimiters">§ 2.1.2 Message delimiters</a> syntax.</p>
+   <h4 class="heading settled" data-level="2.1.1" id="version-announcement"><span class="secno">2.1.1. </span><span class="content">Version announcement</span><a class="self-link" href="#version-announcement"></a></h4>
+   <p>Concrete RDF syntaxes (e.g., <a data-link-type="biblio" href="#biblio-rdf12-turtle" title="RDF 1.2 Turtle">[rdf12-turtle]</a>) are being revised in RDF 1.2 to support in-line version announcements. This allows for communicating to the parser which features of the syntax are used in the file.</p>
+   <p>We extend this mechanism by adding three new version labels for RDF syntaxes that support RDF Messages (see <a href="#version-labels">§ 1.6 Version labels</a>). If a parser encounters a version label with the "-messages" suffix, it should expect the file to <code>MESSAGE</code> directives. Therefore, if the parser does not support RDF Messages, it should reject the file as invalid.</p>
+   <p>In N-Triples (<a data-link-type="biblio" href="#biblio-rdf12-n-triples" title="RDF 1.2 N-Triples">[rdf12-n-triples]</a>) and N-Quads (<a data-link-type="biblio" href="#biblio-rdf12-n-quads" title="RDF 1.2 N-Quads">[rdf12-n-quads]</a>), the version announcement has one legal form (<code>VERSION</code>):</p>
+   <div class="example" id="example-d96504e1">
+    <a class="self-link" href="#example-d96504e1"></a>
+
+<pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
+<c- g>&lt;http://example.org/spiderman></c-> <c- g>&lt;http://example.org/enemyOf></c-> <c- g>&lt;http://example.org/green-goblin></c-> <c- p>.</c->
+</pre>
+   </div>
+   <p>In Turtle (<a data-link-type="biblio" href="#biblio-rdf12-turtle" title="RDF 1.2 Turtle">[rdf12-turtle]</a>) and TriG (<a data-link-type="biblio" href="#biblio-rdf12-trig" title="RDF 1.2 TriG">[rdf12-trig]</a>), the version announcement can be done in the same manner:</p>
+   <div class="example" id="example-f9742232">
+    <a class="self-link" href="#example-f9742232"></a>
+
+<pre class="highlight language-turtle">VERSION <c- s>"1.2-basic-messages"</c->
+<c- k>PREFIX</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/></c->
+<c- nn>ex</c-><c- p>:</c-><c- f>spiderman</c-> <c- nn>ex</c-><c- p>:</c-><c- f>enemyOf</c-> <c- nn>ex</c-><c- p>:</c-><c- f>green-goblin</c-> <c- p>.</c->
+</pre>
+   </div>
+   <p>Or, alternatively, with the old-style <code>@version</code> directive:</p>
+   <div class="example" id="example-51458207">
+    <a class="self-link" href="#example-51458207"></a>
+
+<pre class="highlight language-turtle">@version <c- s>"1.1-messages"</c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/></c-> <c- p>.</c->
+<c- nn>ex</c-><c- p>:</c-><c- f>spiderman</c-> <c- nn>ex</c-><c- p>:</c-><c- f>enemyOf</c-> <c- nn>ex</c-><c- p>:</c-><c- f>green-goblin</c-> <c- p>.</c->
+</pre>
+   </div>
+   <h4 class="heading settled" data-level="2.1.2" id="message-delimiters"><span class="secno">2.1.2. </span><span class="content">Message delimiters</span><a class="self-link" href="#message-delimiters"></a></h4>
+   <p>When the version label of the document being parsed has the "-messages" suffix, the parser MUST:</p>
    <ol>
     <li data-md>
-     <p>Consider every triple in the document as part of an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑥">RDF Message</a>. The document does not need to start with a delimiter. If it does start with a delimiter, the content after the delimiter is part of the first message and the document did not start with an empty message.</p>
+     <p>Consider every triple or quad in the document as part of an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑤">RDF Message</a>.</p>
     <li data-md>
-     <p>Triples are added to the current message as long as no delimiter or EOF has been encountered.</p>
+     <p>Triples or quads are added to the current message as long as no delimiter or EOF has been encountered.</p>
     <li data-md>
-     <p>When a delimiter was encountered, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑦">RDF Message</a> is finalized and a next one is opened.</p>
+     <p>When a delimiter is encountered, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑥">RDF Message</a> is finalized. The next message is opened only if a triple, quad, or another delimiter is encountered after the current delimiter.</p>
+    <li data-md>
+     <p>If a delimiter is encountered before any triple or quad in the document, that means that the first message is empty.</p>
+    <li data-md>
+     <p>When the end of the file is reached, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑦">RDF Message</a> is finalized.</p>
    </ol>
-   <p>The delimiter is a comment in the document that matches this regex: <code>/^\s*@message/</code>.</p>
-   <p class="issue" id="issue-b0131e28"><a class="self-link" href="#issue-b0131e28"></a> Should we allow repeated <code>BASE</code> and <code>PREFIX</code> directives in Turtle / TriG RDF Message Logs? Should they override the previously encountered directives? This may require additional work in the parser.</p>
+   <p>For N-Triples and N-Quads, the <code>directive</code> grammar production is extended as follows:</p>
+<pre class="highlight language-ebnf"><c- k>directive        </c->::<c- o>=</c-> <c- k>versionDirective </c-><c- p>|</c-> <c- k>messageDirective</c->
+<c- k>messageDirective </c->::= <c- t>'MESSAGE'</c->
+</pre>
+   <p>For example, this is an N-Triples file with two messages:</p>
+   <div class="example" id="example-9f13e0f6">
+    <a class="self-link" href="#example-9f13e0f6"></a>
+
+<pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
+<c- g>&lt;http://example.org/message_1></c-> <c- g>&lt;http://example.org/hasValue></c-> <c- s>"Hello, world!"</c-> <c- p>.</c->
+<c- g>&lt;http://example.org/message_1></c-> <c- g>&lt;http://example.org/hasNumber></c-> <c- s>"1"</c-> <c- p>.</c->
+MESSAGE
+<c- g>&lt;http://example.org/message_2></c-> <c- g>&lt;http://example.org/hasValue></c-> <c- s>"Goodbye, world!"</c-> <c- p>.</c->
+</pre>
+   </div>
+   <p>This is a file with one empty message followed by one message with two triples:</p>
+   <div class="example" id="example-bd8555d5">
+    <a class="self-link" href="#example-bd8555d5"></a>
+
+<pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
+MESSAGE
+<c- g>&lt;http://example.org/message_1></c-> <c- g>&lt;http://example.org/hasValue></c-> <c- s>"Hello, world!"</c-> <c- p>.</c->
+<c- g>&lt;http://example.org/message_1></c-> <c- g>&lt;http://example.org/hasNumber></c-> <c- s>"2"</c-> <c- p>.</c->
+</pre>
+   </div>
+   <p>And this is a file with only one message with one triple:</p>
+   <div class="example" id="example-b886f72d">
+    <a class="self-link" href="#example-b886f72d"></a>
+
+<pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
+<c- g>&lt;http://example.org/message_1></c-> <c- g>&lt;http://example.org/hasValue></c-> <c- s>"Hello, world!"</c-> <c- p>.</c->
+MESSAGE
+</pre>
+   </div>
+   <p>For Turtle and TriG, the <code>directive</code> grammar production is extended as follows:</p>
+<pre class="highlight language-ebnf"><c- k>directive     </c->::<c- o>=</c-> <c- k>prefixID </c-><c- p>|</c-> <c- k>base </c-><c- p>|</c-> <c- k>version </c-><c- p>|</c-> <c- k>message</c->
+                  <c- p>|</c-> <c- k>sparqlPrefix </c-><c- p>|</c-> <c- k>sparqlBase </c-><c- p>|</c-> <c- k>sparqlVersion </c-><c- p>|</c-> <c- k>sparqlMessage</c->
+<c- k>message       </c->::= <c- t>'@message'</c-> <c- t>'.'</c->
+<c- k>sparqlMessage </c->::= <c- t>'MESSAGE'</c->
+</pre>
+   <p>For example, this is a TriG file with two messages:</p>
+   <div class="example" id="example-17bc80dd">
+    <a class="self-link" href="#example-17bc80dd"></a>
+
+<pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
+<c- k>PREFIX</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/></c->
+<c- nn>ex</c-><c- p>:</c-><c- f>message_1</c-> <c- p>{</c->
+  <c- nn>ex</c-><c- p>:</c-><c- f>person</c-> <c- nn>ex</c-><c- p>:</c-><c- f>says</c-> <c- s>"Hello, world!"</c-> <c- p>;</c->
+<c- p>}</c->
+<c- nn>ex</c-><c- p>:</c-><c- f>message_1</c-> <c- nn>ex</c-><c- p>:</c-><c- f>hasNumber</c-> <c- mi>1</c-> <c- p>.</c->
+MESSAGE
+<c- nn>ex</c-><c- p>:</c-><c- f>message_2</c-> <c- p>{</c->
+  <c- nn>ex</c-><c- p>:</c-><c- f>person</c-> <c- nn>ex</c-><c- p>:</c-><c- f>says</c-> <c- s>"Goodbye, world!"</c-> <c- p>;</c->
+<c- p>}</c->
+<c- nn>ex</c-><c- p>:</c-><c- f>message_2</c-> <c- nn>ex</c-><c- p>:</c-><c- f>hasNumber</c-> <c- mi>2</c-> <c- p>.</c->
+MESSAGE
+</pre>
+   </div>
+   <p>And this is a Turtle file with two messages in the old-style syntax:</p>
+   <div class="example" id="example-a333c4fd">
+    <a class="self-link" href="#example-a333c4fd"></a>
+
+<pre class="highlight language-turtle">@version <c- s>"1.2-messages"</c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/></c-> <c- p>.</c->
+<c- nn>ex</c-><c- p>:</c-><c- f>person</c-> <c- nn>ex</c-><c- p>:</c-><c- f>says</c-> <c- s>"Hello, world!"</c-> <c- p>.</c->
+@message <c- p>.</c->
+<c- nn>ex</c-><c- p>:</c-><c- f>person</c-> <c- nn>ex</c-><c- p>:</c-><c- f>says</c-> <c- s>"Goodbye, world!"</c-> <c- p>.</c->
+</pre>
+   </div>
+   <p class="note" role="note"><span class="marker">Note:</span> Because blank node identifiers are scoped to the message they occur in, the same blank node identifier can be used in different messages without causing collisions. Typically parsers that insert triples/quads into an RDF store remap blank node identifiers from the parsed file to internal identifiers. To implement RDF Messages, parsers should reset their blank node identifier mapping when a message delimiter is encountered, so that the same blank node identifier can be reused in the next message in the log without causing collisions.</p>
+   <h4 class="heading settled" data-level="2.1.3" id="prefixes-and-base-iris"><span class="secno">2.1.3. </span><span class="content">Repeated PREFIX and BASE directives</span><a class="self-link" href="#prefixes-and-base-iris"></a></h4>
+   <p>Repated <code>PREFIX</code> and <code>BASE</code> directives are allowed in Turtle and TriG RDF Message Logs – see <a href="https://www.w3.org/TR/rdf12-turtle/#ex-turtle-abbreviations">Example 12 in RDF 1.2 Turtle</a>. If, for example, <code>PREFIX ex:</code> is defined in the document, and then later <code>PREFIX ex:</code> is defined again with a different IRI, the second definition will override the first one for the rest of the document.</p>
+   <p>Similarly, repeated <code>PREFIX</code> and <code>BASE</code> directives are allowed in RDF Message Logs, making it possible to easily concatenate Turtle / TriG files into RDF Message Logs.</p>
+   <p>In this example, the first message uses the <code>ex:</code> prefix to refer to <code>http://example.org/</code>, while the second message uses the same prefix to refer to <code>http://different-iri.org/</code>:</p>
+   <div class="example" id="example-cef65977">
+    <a class="self-link" href="#example-cef65977"></a>
+
+<pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
+<c- k>PREFIX</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/></c->
+<c- nn>ex</c-><c- p>:</c-><c- f>person</c-> <c- nn>ex</c-><c- p>:</c-><c- f>says</c-> <c- s>"Hello, world!"</c-> <c- p>.</c->
+MESSAGE
+<c- k>PREFIX</c-> <c- nn>ex:</c-> <c- g>&lt;http://different-iri.org/></c->
+<c- nn>ex</c-><c- p>:</c-><c- f>person</c-> <c- nn>ex</c-><c- p>:</c-><c- f>says</c-> <c- s>"Goodbye, world!"</c-> <c- p>.</c->
+</pre>
+   </div>
    <h3 class="heading settled" data-level="2.2" id="json-ld"><span class="secno">2.2. </span><span class="content">JSON-LD</span><a class="self-link" href="#json-ld"></a></h3>
    <p class="issue" id="issue-2b0f071c"><a class="self-link" href="#issue-2b0f071c"></a> This discussion is preliminary, yet on-going, in the JSON-LD group itself with a proposal called <a href="https://github.com/json-ld/ndjson-ld/issues/1">newline delimited JSON-LD</a>. We propose that that specification becomes the preferred way of adding messages support in JSON-LD. It is <a href="https://github.com/eclipse-rdf4j/rdf4j/issues/2840">already implemented in some libraries</a> and it is already being used in some projects.</p>
    <p>We propose to use the <a href="https://github.com/json-ld/ndjson-ld">unofficial NDJSON-LD format</a> as the serialization format for <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log③">RDF Message Logs</a> in JSON-LD. In <a href="https://github.com/ndjson/ndjson-spec">NDJSON</a>, multiple JSON objects are concatenated together, with each object being separated by a newline character (<code>\n</code>). NDJSON-LD simply applies this format to JSON-LD documents, where each each line corresponds to an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑧">RDF Message</a>.</p>
@@ -2684,6 +2915,18 @@ This could be greatly improved by using an <a data-link-type="dfn" href="#rdf-me
    <dd>Gavin Carothers. <a href="https://w3c.github.io/rdf-n-quads/spec/"><cite>RDF 1.1 N-Quads</cite></a>. URL: <a href="https://w3c.github.io/rdf-n-quads/spec/">https://w3c.github.io/rdf-n-quads/spec/</a>
    <dt id="biblio-n-triples">[N-TRIPLES]
    <dd>Gavin Carothers; Andy Seaborne. <a href="https://w3c.github.io/rdf-n-triples/spec/"><cite>RDF 1.1 N-Triples</cite></a>. URL: <a href="https://w3c.github.io/rdf-n-triples/spec/">https://w3c.github.io/rdf-n-triples/spec/</a>
+   <dt id="biblio-rdf12-concepts">[RDF12-CONCEPTS]
+   <dd>Andy Seaborne; et al. <a href="https://w3c.github.io/rdf-concepts/spec/"><cite>RDF 1.2 Concepts and Abstract Data Model</cite></a>. URL: <a href="https://w3c.github.io/rdf-concepts/spec/">https://w3c.github.io/rdf-concepts/spec/</a>
+   <dt id="biblio-rdf12-n-quads">[RDF12-N-QUADS]
+   <dd>Gregg Kellogg; Dominik Tomaszuk. <a href="https://w3c.github.io/rdf-n-quads/spec/"><cite>RDF 1.2 N-Quads</cite></a>. URL: <a href="https://w3c.github.io/rdf-n-quads/spec/">https://w3c.github.io/rdf-n-quads/spec/</a>
+   <dt id="biblio-rdf12-n-triples">[RDF12-N-TRIPLES]
+   <dd>Gregg Kellogg; Dominik Tomaszuk. <a href="https://w3c.github.io/rdf-n-triples/spec/"><cite>RDF 1.2 N-Triples</cite></a>. URL: <a href="https://w3c.github.io/rdf-n-triples/spec/">https://w3c.github.io/rdf-n-triples/spec/</a>
+   <dt id="biblio-rdf12-semantics">[RDF12-SEMANTICS]
+   <dd>Peter Patel-Schneider; Enrico Franconi; Dörthe Arndt. <a href="https://w3c.github.io/rdf-semantics/spec/"><cite>RDF 1.2 Semantics</cite></a>. URL: <a href="https://w3c.github.io/rdf-semantics/spec/">https://w3c.github.io/rdf-semantics/spec/</a>
+   <dt id="biblio-rdf12-trig">[RDF12-TRIG]
+   <dd>Gregg Kellogg; Dominik Tomaszuk. <a href="https://w3c.github.io/rdf-trig/spec/"><cite>RDF 1.2 TriG</cite></a>. URL: <a href="https://w3c.github.io/rdf-trig/spec/">https://w3c.github.io/rdf-trig/spec/</a>
+   <dt id="biblio-rdf12-turtle">[RDF12-TURTLE]
+   <dd>Gregg Kellogg; Andy Seaborne; Dominik Tomaszuk. <a href="https://w3c.github.io/rdf-turtle/spec/"><cite>RDF 1.2 Turtle</cite></a>. URL: <a href="https://w3c.github.io/rdf-turtle/spec/">https://w3c.github.io/rdf-turtle/spec/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
    <dt id="biblio-vocab-ssn">[VOCAB-SSN]
@@ -2693,7 +2936,7 @@ This could be greatly improved by using an <a data-link-type="dfn" href="#rdf-me
    <dt id="biblio-yaml">[YAML]
    <dd>Oren Ben-Kiki; Clark Evans; Ingy döt Net. <a href="http://yaml.org/spec/1.2/spec.html"><cite>YAML Ain’t Markup Language (YAML™) Version 1.2</cite></a>. 1 October 2009. URL: <a href="http://yaml.org/spec/1.2/spec.html">http://yaml.org/spec/1.2/spec.html</a>
   </dl>
-  <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Non-Normative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-mqtt-5">[MQTT-5]
    <dd>Andrew Banks; et al. <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html"><cite>MQTT Version 5.0</cite></a>. OASIS Standard. URL: <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html">https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html</a>
@@ -2703,7 +2946,6 @@ This could be greatly improved by using an <a data-link-type="dfn" href="#rdf-me
    <div class="issue"> Add a diagram illustrating RDF Messages, an RDF Message Stream, stream producers, and stream consumers. <a class="issue-return" href="#issue-8a849945" title="Jump to section">↵</a></div>
    <div class="issue"> Find out and document the similarities/differences to the <a href="https://rdf.js.org/stream-spec/">RDF-JS Stream interface</a> <a class="issue-return" href="#issue-4378f19c" title="Jump to section">↵</a></div>
    <div class="issue"> Can we provide an example of an RDF Message Log that does not use any of the formats that we define in the next section, to illustrate the concept of an RDF Message Log without relying on the syntax of a specific format? <a class="issue-return" href="#issue-3e872813" title="Jump to section">↵</a></div>
-   <div class="issue"> Should we allow repeated <code>BASE</code> and <code>PREFIX</code> directives in Turtle / TriG RDF Message Logs? Should they override the previously encountered directives? This may require additional work in the parser. <a class="issue-return" href="#issue-b0131e28" title="Jump to section">↵</a></div>
    <div class="issue"> This discussion is preliminary, yet on-going, in the JSON-LD group itself with a proposal called <a href="https://github.com/json-ld/ndjson-ld/issues/1">newline delimited JSON-LD</a>. We propose that that specification becomes the preferred way of adding messages support in JSON-LD. It is <a href="https://github.com/eclipse-rdf4j/rdf4j/issues/2840">already implemented in some libraries</a> and it is already being used in some projects. <a class="issue-return" href="#issue-2b0f071c" title="Jump to section">↵</a></div>
    <div class="issue"> What should be the content type for this format? RDF4J currently uses <code>application/x-ld+ndjson</code> – <a href="https://github.com/eclipse-rdf4j/rdf4j/pull/2845">see the pull request</a>. <a class="issue-return" href="#issue-ef7b8e53" title="Jump to section">↵</a></div>
    <div class="issue"> Tracked as <a href="https://github.com/w3c-cg/rsp/issues/4">w3c-cg/rsp issue #4</a>. The format proposed here is incompatible with the <a href="https://www.w3.org/community/reports/json-ld/CG-FINAL-yaml-ld-20231206/">YAML-LD Final Community Group Report</a>, which proposes to instead transform YAML streams into a top-level array in a JSON-LD document. The discussion on this topic is still on-going and must be resolved in collaboration with the newly-rechartered JSON-LD WG. <a class="issue-return" href="#issue-484cf451" title="Jump to section">↵</a></div>
@@ -2911,7 +3153,7 @@ function parseHTML(markup) {
 "use strict";
 {
 let dfnPanelData = {
-"rdf-message": {"dfnID":"rdf-message","dfnText":"RDF Message","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message"}],"title":"1.2. RDF Message Streams"},{"refs":[{"id":"ref-for-rdf-message\u2460"}],"title":"1.3. Scope of RDF Messages"},{"refs":[{"id":"ref-for-rdf-message\u2461"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message\u2462"}],"title":"1.5. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message\u2463"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message\u2464"},{"id":"ref-for-rdf-message\u2465"},{"id":"ref-for-rdf-message\u2466"}],"title":"2.1. N-Triples, N-Quads, Turtle and TriG"},{"refs":[{"id":"ref-for-rdf-message\u2467"}],"title":"2.2. JSON-LD"},{"refs":[{"id":"ref-for-rdf-message\u2468"}],"title":"2.3. YAML-LD"},{"refs":[{"id":"ref-for-rdf-message\u2460\u24ea"},{"id":"ref-for-rdf-message\u2460\u2460"}],"title":"4.1. An archive of an RDF Stream"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2461"}],"title":"4.2. SPARQL CONSTRUCT results"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2462"}],"title":"4.4. Nanopublications"}],"url":"#rdf-message"},
+"rdf-message": {"dfnID":"rdf-message","dfnText":"RDF Message","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message"}],"title":"1.2. RDF Message Streams"},{"refs":[{"id":"ref-for-rdf-message\u2460"}],"title":"1.3. Scope of RDF Messages"},{"refs":[{"id":"ref-for-rdf-message\u2461"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message\u2462"}],"title":"1.5. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message\u2463"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message\u2464"},{"id":"ref-for-rdf-message\u2465"},{"id":"ref-for-rdf-message\u2466"}],"title":"2.1.2. Message delimiters"},{"refs":[{"id":"ref-for-rdf-message\u2467"}],"title":"2.2. JSON-LD"},{"refs":[{"id":"ref-for-rdf-message\u2468"}],"title":"2.3. YAML-LD"},{"refs":[{"id":"ref-for-rdf-message\u2460\u24ea"},{"id":"ref-for-rdf-message\u2460\u2460"}],"title":"4.1. An archive of an RDF Stream"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2461"}],"title":"4.2. SPARQL CONSTRUCT results"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2462"}],"title":"4.4. Nanopublications"}],"url":"#rdf-message"},
 "rdf-message-log": {"dfnID":"rdf-message-log","dfnText":"RDF Message Log","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-log"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message-log\u2460"}],"title":"1.5. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-log\u2461"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-log\u2462"},{"id":"ref-for-rdf-message-log\u2463"}],"title":"2.2. JSON-LD"},{"refs":[{"id":"ref-for-rdf-message-log\u2464"},{"id":"ref-for-rdf-message-log\u2465"}],"title":"2.3. YAML-LD"},{"refs":[{"id":"ref-for-rdf-message-log\u2466"}],"title":"2.4. RDF/XML"},{"refs":[{"id":"ref-for-rdf-message-log\u2467"}],"title":"2.5. Other formats"},{"refs":[{"id":"ref-for-rdf-message-log\u2468"}],"title":"4.1. An archive of an RDF Stream"},{"refs":[{"id":"ref-for-rdf-message-log\u2460\u24ea"},{"id":"ref-for-rdf-message-log\u2460\u2460"}],"title":"4.3. RiverBench dataset distributions"},{"refs":[{"id":"ref-for-rdf-message-log\u2460\u2461"}],"title":"4.4. Nanopublications"}],"url":"#rdf-message-log"},
 "rdf-message-stream": {"dfnID":"rdf-message-stream","dfnText":"RDF Message Stream","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-stream"}],"title":"1.3. Scope of RDF Messages"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460"},{"id":"ref-for-rdf-message-stream\u2461"},{"id":"ref-for-rdf-message-stream\u2462"},{"id":"ref-for-rdf-message-stream\u2463"},{"id":"ref-for-rdf-message-stream\u2464"},{"id":"ref-for-rdf-message-stream\u2465"},{"id":"ref-for-rdf-message-stream\u2466"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message-stream\u2467"},{"id":"ref-for-rdf-message-stream\u2468"},{"id":"ref-for-rdf-message-stream\u2460\u24ea"}],"title":"1.5. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460\u2460"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460\u2461"}],"title":"4.2. SPARQL CONSTRUCT results"}],"url":"#rdf-message-stream"},
 "rdf-message-stream-consumer": {"dfnID":"rdf-message-stream-consumer","dfnText":"RDF Message Stream Consumer","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-stream-consumer"}],"title":"2. Serializing and parsing RDF Message Logs"}],"url":"#rdf-message-stream-consumer"},
