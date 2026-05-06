@@ -353,7 +353,7 @@ Input:
 VERSION "1.2-messages"
 <http://example.org/g> {
   <http://example.org/a> <http://example.org/b> <http://example.org/c> .
-@message
+MESSAGE
   <http://example.org/d> <http://example.org/e> <http://example.org/f> .
 }
 ```
