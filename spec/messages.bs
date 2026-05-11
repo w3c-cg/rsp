@@ -300,6 +300,8 @@ When the version label of the document being parsed has the "-messages" suffix, 
  4. If a delimiter is encountered before any triple or quad in the document, that means that the first message is empty.
  5. When the end of the file is reached, the current [=RDF Message=] is finalized.
 
+Note: A dedicated message delimiter syntax is required because comments are ignored by RDF parsers and therefore cannot reliably delimit messages. Also, each message may have its own implicit context or profile, and blank node scoping is defined per message. A new syntax makes these message-level semantics explicit and avoids accidental cross-message assertions or blank node collisions.
+
 For N-Triples and N-Quads, the `directive` grammar production is extended as follows:
 
 ```ebnf
