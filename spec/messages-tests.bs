@@ -11,7 +11,7 @@ Repository: https://github.com/w3c-cg/rsp
 Abstract: Tests for parsers and serializers with message support in various RDF serializations.
 </pre>
 
-# RDF Messages Interoperability Tests
+# RDF Messages Interoperability Tests # {#rdf-messages-interoperability-tests}
 
 This document proposes interoperability tests for implementations that support RDF Message Logs for different serializations.
 
@@ -28,9 +28,9 @@ Message delimiters are message-level syntax. They MUST only occur where the unde
 Serializers should produce RDF Message Logs that round-trip to the same message sequence and the same quads per message. Conformance tests should not require a serializer to choose a specific delimiter spelling when more than one delimiter spelling is supported by the target syntax.
 
 
-## Parsing Tests for Turtle, TriG, N-Triples, and N-Quads
+## Parsing Tests for Turtle, TriG, N-Triples, and N-Quads ## {#parsing-tests-turtle-trig-n-triples-n-quads}
 
-### 1. Single Message Without Delimiter
+### Single Message Without Delimiter ### {#single-message-without-delimiter}
 
 Input:
 
@@ -46,7 +46,7 @@ Message 1:
   <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
 ```
 
-### 2. Two Messages With `MESSAGE`
+### Two Messages With `MESSAGE` ### {#two-messages-with-message}
 
 Input:
 
@@ -67,7 +67,7 @@ Message 2:
   <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
 ```
 
-### 3. Two Messages With `@message .`
+### Two Messages With `@message .` ### {#two-messages-with-at-message}
 
 Input:
 
@@ -90,7 +90,7 @@ Message 2:
   <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
 ```
 
-### 4. Empty First Message
+### Empty First Message ### {#empty-first-message}
 
 Input:
 
@@ -110,7 +110,7 @@ Message 2:
   <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
 ```
 
-### 5. Empty Message Between Non-Empty Messages
+### Empty Message Between Non-Empty Messages ### {#empty-message-between-non-empty-messages}
 
 Input:
 
@@ -135,7 +135,7 @@ Message 3:
   <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
 ```
 
-### 6. Final Delimiter Does Not Create Extra Empty Message
+### Final Delimiter Does Not Create Extra Empty Message ### {#final-delimiter-does-not-create-extra-empty-message}
 
 Input:
 
@@ -152,11 +152,11 @@ Message 1:
   <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
 ```
 
-### 7. N-Quads Messages Preserve Graph Names
+### N-Quads Messages Preserve Graph Names ### {#n-quads-messages-preserve-graph-names}
 
 Input:
 
-```nquads
+```text
 VERSION "1.2-messages"
 <http://example.org/s1> <http://example.org/p> <http://example.org/o1> <http://example.org/g1> .
 MESSAGE
@@ -173,11 +173,11 @@ Message 2:
   <http://example.org/s2> <http://example.org/p> <http://example.org/o2> <http://example.org/g2> .
 ```
 
-### 8. Message With Default Graph And Named Graph Quads
+### Message With Default Graph And Named Graph Quads ### {#message-with-default-graph-and-named-graph-quads}
 
 Input:
 
-```trig
+```turtle
 VERSION "1.2-messages"
 PREFIX ex: <http://example.org/>
 
@@ -202,7 +202,7 @@ Message 2:
   <http://example.org/s4> <http://example.org/p> <http://example.org/o4> .
 ```
 
-### 9. Blank Node Labels Are Scoped Per Message
+### Blank Node Labels Are Scoped Per Message ### {#blank-node-labels-are-scoped-per-message}
 
 Input:
 
@@ -223,7 +223,7 @@ The two blank nodes must not be the same RDF term.
 
 This test must be performed on one continuous input string or stream, not by creating two independent parser instances.
 
-### 10. Repeated Prefixes Across Messages
+### Repeated Prefixes Across Messages ### {#repeated-prefixes-across-messages}
 
 Input:
 
@@ -246,11 +246,11 @@ Message 2:
   <http://example.org/two/s> <http://example.org/two/p> <http://example.org/two/o> .
 ```
 
-### 11. Message Boundary After A Graph Block
+### Message Boundary After A Graph Block ### {#message-boundary-after-a-graph-block}
 
 Input:
 
-```trig
+```turtle
 VERSION "1.2-messages"
 <http://example.org/g> {
   <http://example.org/a> <http://example.org/b> <http://example.org/c> .
@@ -269,7 +269,7 @@ Message 2:
   <http://example.org/d> <http://example.org/e> <http://example.org/f> .
 ```
 
-## Serialization Tests for Turtle, TriG, N-Triples, and N-Quads
+## Serialization Tests for Turtle, TriG, N-Triples, and N-Quads ## {#serialization-tests-turtle-trig-n-triples-n-quads}
 
 Given a sequence of RDF Messages, a serializer should write a document that can be parsed back into the same sequence of messages and quads.
 
@@ -321,9 +321,9 @@ Message 2:
   <http://example.org/d> <http://example.org/e> <http://example.org/f> <http://example.org/g> .
 ```
 
-## Error Tests
+## Error Tests ## {#error-tests}
 
-### 1. Message Delimiter Without Message Support
+### Message Delimiter Without Message Support ### {#message-delimiter-without-message-support}
 
 If a parser is not in RDF Messages mode and encounters a message delimiter, it must reject the document.
 
@@ -340,7 +340,7 @@ Expected result:
 Parse error.
 ```
 
-### 2. `@message` Without Trailing Dot
+### `@message` Without Trailing Dot ### {#at-message-without-trailing-dot}
 
 Input:
 
@@ -356,13 +356,13 @@ Expected result:
 Parse error.
 ```
 
-### 3. Message Delimiter Inside An Open Graph Block
+### Message Delimiter Inside An Open Graph Block ### {#message-delimiter-inside-an-open-graph-block}
 
 A message delimiter must not be accepted inside an open graph block. It must be rejected instead of being interpreted as splitting the graph block across two messages.
 
 Input:
 
-```trig
+```turtle
 VERSION "1.2-messages"
 <http://example.org/g> {
   <http://example.org/a> <http://example.org/b> <http://example.org/c> .
@@ -376,4 +376,3 @@ Expected result:
 ```text
 Parse error.
 ```
-
