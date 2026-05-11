@@ -20,6 +20,8 @@ jobs:
             destination: index.html
           - source: spec/messages.bs
             destination: spec/messages.html
+          - source: spec/messages-tests.bs
+            destination: spec/messages-tests.html
 
     steps:
       - uses: actions/checkout@v3

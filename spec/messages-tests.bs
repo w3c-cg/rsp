@@ -1,8 +1,21 @@
+<pre class='metadata'>
+Title: RDF Messages Tests
+Shortname: RDF-M-tests
+Level: 1
+Status: LD
+Markup Shorthands: markdown yes
+URL: https://w3c-cg.github.io/rsp/spec/messages-tests
+Editor: Pieter Colpaert, https://pietercolpaert.be
+Editor: Piotr Sowiński, NeverBlink https://www.neverblink.eu/, https://ostrzyciel.eu/
+Repository: https://github.com/w3c-cg/rsp
+Abstract: Tests for parsers and serializers with message support in various RDF serializations.
+</pre>
+
 # RDF Messages Interoperability Tests
 
-This document proposes interoperability tests for implementations that support RDF Message Logs for Turtle, TriG, N-Triples, and N-Quads.
+This document proposes interoperability tests for implementations that support RDF Message Logs for different serializations.
 
-Implementations MUST provide conformance tests for RDF Message Logs that verify message-level behavior.
+Implementations of parsers and serializers MUST provide conformance tests for RDF Message Logs that verify message-level behavior.
 
 An RDF Message Log parser MUST expose a message-level interface that emits one RDF Dataset per completed message.
 
@@ -15,7 +28,7 @@ Message delimiters are message-level syntax. They MUST only occur where the unde
 Serializers should produce RDF Message Logs that round-trip to the same message sequence and the same quads per message. Conformance tests should not require a serializer to choose a specific delimiter spelling when more than one delimiter spelling is supported by the target syntax.
 
 
-## Parsing Tests
+## Parsing Tests for Turtle, TriG, N-Triples, and N-Quads
 
 ### 1. Single Message Without Delimiter
 
@@ -256,7 +269,7 @@ Message 2:
   <http://example.org/d> <http://example.org/e> <http://example.org/f> .
 ```
 
-## Serialization Tests
+## Serialization Tests for Turtle, TriG, N-Triples, and N-Quads
 
 Given a sequence of RDF Messages, a serializer should write a document that can be parsed back into the same sequence of messages and quads.
 

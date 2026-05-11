@@ -19,6 +19,8 @@ Currently, this repository contains the following specifications:
 
 - RDF Messages – [source code](spec/messages.bs), [published version](https://w3c-cg.github.io/rsp/spec/messages)
     - Defines the base concepts of RDF Messages, RDF Message Streams, and RDF Message Logs.
+- RDF Messages Tests – [source code](spec/messages-tests.bs), [published version](https://w3c-cg.github.io/rsp/spec/messages-tests)
+    - Provides interoperability tests for parsers and serializers that support RDF Message Logs.
 
 Additionally, there is the [index.bs](index.bs) file that lists the specifications ([published version](https://w3c-cg.github.io/rsp)).
 
