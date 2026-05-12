@@ -15,6 +15,8 @@ Abstract: Concepts and abstract data model for RDF Messages
 
 This specification defines the concepts of RDF Messages, RDF Message Streams, and RDF Message Logs, as well as the syntax for serializing RDF Message Logs in various RDF serialization formats.
 
+The companion document [RDF Messages Tests](spec/messages-tests.bs) defines interoperability tests for RDF Message Logs and supported serialization formats.
+
 In this document, we are discussing *message-level* streaming, where streams are sequences of discrete messages – each message may contain multiple RDF triples or quads. This is in contrast to *triple-* or *quad-level* streaming of RDF data, where streams are sequences of individual RDF triples or quads. For quad-level streaming, please refer to, for example: [[!n-quads]], [[!n-triples]], and [[!json-ld11-streaming]].
 
 Note: Quad-level streaming is complementary to message-level streaming, and both can be used together. This is the case, for example, in the [Jelly](https://w3id.org/jelly/) serialization format, as well as some of the formats proposed in [[#rdf-message-logs-serialization]].
