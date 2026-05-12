@@ -1488,9 +1488,9 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version 5d4d5b9a8, updated Fri Apr 17 13:49:40 2026 -0700" name="generator">
+  <meta content="Bikeshed version 0a3d88311, updated Mon May 4 18:07:03 2026 +0000" name="generator">
   <link href="https://w3c-cg.github.io/rsp/spec/messages" rel="canonical">
-  <meta content="2b78134fdf6176570e90b8970ef0ec4658079c04" name="revision">
+  <meta content="291e0c92189f1bf6e7f1291c6d23e90973b2b990" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 table { border-collapse: collapse }
@@ -2208,7 +2208,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">RDF Messages</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-04-23">23 April 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-05-12">12 May 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2225,7 +2225,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 23 April 2026,
+In addition, as of 12 May 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2523,6 +2523,7 @@ This way, a <a data-link-type="dfn" href="#rdf-message-stream-consumer" id="ref-
     <li data-md>
      <p>When the end of the file is reached, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑦">RDF Message</a> is finalized.</p>
    </ol>
+   <p class="note" role="note"><span class="marker">Note:</span> A dedicated message delimiter syntax is required because comments are ignored by RDF parsers and therefore cannot reliably delimit messages. Also, each message may have its own implicit context or profile, and blank node scoping is defined per message. A new syntax makes these message-level semantics explicit and avoids accidental cross-message assertions or blank node collisions.</p>
    <p>For N-Triples and N-Quads, the <code>directive</code> grammar production is extended as follows:</p>
 <pre class="highlight language-ebnf"><c- k>directive        </c->::<c- o>=</c-> <c- k>versionDirective </c-><c- p>|</c-> <c- k>messageDirective</c->
 <c- k>messageDirective </c->::= <c- t>'MESSAGE'</c->
