@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0a3d88311, updated Mon May 4 18:07:03 2026 +0000" name="generator">
   <link href="https://w3c-cg.github.io/rsp/spec/messages" rel="canonical">
-  <meta content="918a8688c887574bdf4f7d0760800913cbc88069" name="revision">
+  <meta content="7684b58ce3a6bd940a91179b6e11f6f7f2d3f3e2" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 table { border-collapse: collapse }
@@ -2208,7 +2208,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">RDF Messages</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-05-12">12 May 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-06-02">2 June 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2225,7 +2225,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 12 May 2026,
+In addition, as of 2 June 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2294,7 +2294,7 @@ Parts of this work may be from another specification document.  If so, those par
   <main>
    <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
    <p>This specification defines the concepts of RDF Messages, RDF Message Streams, and RDF Message Logs, as well as the syntax for serializing RDF Message Logs in various RDF serialization formats.</p>
-   <p>The companion document <a href="spec/messages-tests.bs">RDF Messages Tests</a> defines interoperability tests for RDF Message Logs and supported serialization formats.</p>
+   <p>The companion document <a href="messages-tests">RDF Messages Tests</a> defines interoperability tests for RDF Message Logs and supported serialization formats.</p>
    <p>In this document, we are discussing <em>message-level</em> streaming, where streams are sequences of discrete messages – each message may contain multiple RDF triples or quads. This is in contrast to <em>triple-</em> or <em>quad-level</em> streaming of RDF data, where streams are sequences of individual RDF triples or quads. For quad-level streaming, please refer to, for example: <a data-link-type="biblio" href="#biblio-n-quads" title="RDF 1.1 N-Quads">[n-quads]</a>, <a data-link-type="biblio" href="#biblio-n-triples" title="RDF 1.1 N-Triples">[n-triples]</a>, and <a data-link-type="biblio" href="#biblio-json-ld11-streaming" title="Streaming JSON-LD">[json-ld11-streaming]</a>.</p>
    <p class="note" role="note"><span class="marker">Note:</span> Quad-level streaming is complementary to message-level streaming, and both can be used together. This is the case, for example, in the <a href="https://w3id.org/jelly/">Jelly</a> serialization format, as well as some of the formats proposed in <a href="#rdf-message-logs-serialization">§ 2 Serializing and parsing RDF Message Logs</a>.</p>
    <h3 class="heading settled" data-level="1.1" id="rdf-messages"><span class="secno">1.1. </span><span class="content">RDF Messages</span><a class="self-link" href="#rdf-messages"></a></h3>
