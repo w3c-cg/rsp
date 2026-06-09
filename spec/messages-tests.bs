@@ -13,9 +13,9 @@ Abstract: Tests for parsers and serializers with message support in various RDF 
 
 # RDF Messages Interoperability Tests # {#rdf-messages-interoperability-tests}
 
-This document proposes interoperability tests for implementations that support RDF Message Logs for different serializations.
+This document proposes interoperability tests for implementations that support RDF Message Logs and RDF Message live streams for different serializations.
 
-Implementations of parsers and serializers MUST provide conformance tests for RDF Message Logs that verify message-level behavior.
+Implementations of parsers, serializers, and live stream adapters MUST provide conformance tests that verify message-level behavior.
 
 An RDF Message Log parser MUST expose a message-level interface that emits one RDF Dataset per completed message.
 
@@ -27,6 +27,203 @@ Message delimiters are message-level syntax. They MUST only occur where the unde
 
 Serializers should produce RDF Message Logs that round-trip to the same message sequence and the same quads per message. Conformance tests should not require a serializer to choose a specific delimiter spelling when more than one delimiter spelling is supported by the target syntax.
 
+
+## Message Stream Discovery Tests ## {#message-stream-discovery-tests}
+
+These tests apply to adapters that expose protocol messages as RDF Messages.
+
+### Server-Sent Events With JSON-LD Context Link ### {#sse-json-ld-context-link}
+
+Stream metadata:
+
+```http
+Content-Type: text/event-stream
+Link: <https://example.org/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+RDF-Message-Content-Type: application/ld+json
+```
+
+The context document at `https://example.org/context.jsonld` is:
+
+```json
+{"@context":{"ex":"http://example.org/","p":{"@id":"http://example.org/p","@type":"@id"}}}
+```
+
+Input events:
+
+```text
+event: rdf-message
+data: {"@id":"ex:s1","p":"ex:o1"}
+
+event: rdf-message
+data: {"@id":"ex:s2","p":"ex:o2"}
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+Message 2:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+### WebSocket Subprotocol Negotiation ### {#websocket-subprotocol-negotiation}
+
+Handshake request:
+
+```http
+Sec-WebSocket-Protocol: rdfm.ld-json, rdfm.n-triples
+```
+
+Handshake response:
+
+```http
+Sec-WebSocket-Protocol: rdfm.n-triples
+```
+
+Input frames:
+
+```text
+Frame 1:
+  _:b0 <http://example.org/p> <http://example.org/o1> .
+
+Frame 2:
+  _:b0 <http://example.org/p> <http://example.org/o2> .
+```
+
+Expected result:
+
+```text
+Message 1 contains one triple whose subject is a blank node.
+Message 2 contains one triple whose subject is a blank node.
+The two blank nodes must not be the same RDF term.
+```
+
+### Kafka Records ### {#kafka-records}
+
+Record headers for both records:
+
+```text
+RDF-Message-Content-Type: application/n-triples
+```
+
+Input records:
+
+```text
+Record 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+Record 2:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+Message 2:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+### MQTT 5 Publish Packets ### {#mqtt-5-publish-packets}
+
+PUBLISH properties for both packets:
+
+```text
+Content Type: application/ld+json
+```
+
+Input packets:
+
+```text
+Packet 1 payload:
+  {"@id":"http://example.org/s1","http://example.org/p":{"@id":"http://example.org/o1"}}
+
+Packet 2 payload:
+  {"@id":"http://example.org/s2","http://example.org/p":{"@id":"http://example.org/o2"}}
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+Message 2:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+### Other Broker Messages ### {#other-broker-messages}
+
+Message headers for both broker messages:
+
+```text
+RDF-Message-Content-Type: application/trig
+```
+
+Input broker messages:
+
+```text
+Message 1 body:
+  <http://example.org/g1> {
+    <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+  }
+
+Message 2 body:
+  <http://example.org/g2> {
+    <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+  }
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> <http://example.org/g1> .
+
+Message 2:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> <http://example.org/g2> .
+```
+
+### Jelly gRPC Frames ### {#jelly-grpc-frames}
+
+Input stream:
+
+```text
+RdfStreamFrame 1:
+  RDF dataset containing <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+RdfStreamFrame 2:
+  RDF dataset containing <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+Message 2:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+### SSE Rejects Direct Binary RDF Payloads ### {#sse-rejects-direct-binary-rdf-payloads}
+
+Stream metadata:
+
+```http
+Content-Type: text/event-stream
+RDF-Message-Content-Type: application/x-jelly-rdf
+```
+
+Expected result:
+
+```text
+The adapter must reject the stream metadata because binary RDF serializations must not be sent directly in SSE data fields.
+```
 
 ## Parsing Tests for Turtle, TriG, N-Triples, and N-Quads ## {#parsing-tests-turtle-trig-n-triples-n-quads}
 
