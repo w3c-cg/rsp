@@ -268,7 +268,7 @@ body:
 
 ### Jelly gRPC ### {#jelly-grpc}
 
-See https://jelly-rdf.github.io/dev/specification/streaming/
+See https://w3id.org/jelly/dev/specification/streaming/
 
 Every RdfStreamFrame is in fact an RDF Message.
 
