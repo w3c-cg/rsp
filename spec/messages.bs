@@ -299,8 +299,10 @@ When the version label of the document being parsed has the "-messages" suffix, 
  1. Consider every triple or quad in the document as part of an [=RDF Message=].
  2. Triples or quads are added to the current message as long as no delimiter or EOF has been encountered.
  3. When a delimiter is encountered, the current [=RDF Message=] is finalized. The next message is opened only if a triple, quad, or another delimiter is encountered after the current delimiter.
- 4. If a delimiter is encountered before any triple or quad in the document, that means that the first message is empty.
- 5. When the end of the file is reached, the current [=RDF Message=] is finalized.
+ 4. If a delimiter is encountered before any triple or quad in the document, the first message is empty.
+ 5. When the end of the file is reached, the current [=RDF Message=] is finalized, if one is open.
+
+Note: A trailing delimiter immediately followed by EOF does not create an additional empty message.
 
 Note: A dedicated message delimiter syntax is required because comments are ignored by RDF parsers and therefore cannot reliably delimit messages. Also, each message may have its own implicit context or profile, and blank node scoping is defined per message. A new syntax makes these message-level semantics explicit and avoids accidental cross-message assertions or blank node collisions.
 
