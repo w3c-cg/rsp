@@ -101,7 +101,7 @@ In this example, the server is the **stream producer**, and the client is the **
 </div>
 
 <div class="example">
-An MQTT broker ([[mqtt-5]]) hosts a topic `iot/temparature` to which RDF Messages are published by an IoT thermometer. Multiple clients, at different points in time, subscribe to that topic to consume the RDF Messages being published. Because of the used Quality-of-Service settings (QoS 0), some messages maybe be lost or reordered, resulting in different clients seeing different subsets of the messages published on the topic.
+An MQTT broker ([[mqtt-5]]) hosts a topic `iot/temperature` to which RDF Messages are published by an IoT thermometer. Multiple clients, at different points in time, subscribe to that topic to consume the RDF Messages being published. Because of the used Quality-of-Service settings (QoS 0), some messages maybe be lost or reordered, resulting in different clients seeing different subsets of the messages published on the topic.
 
 In this example:
 
@@ -414,7 +414,7 @@ We propose to extend the existing N-Triples, N-Quads, Turtle, and TriG formats t
 
 Concrete RDF syntaxes (e.g., [[!rdf12-turtle]]) are being revised in RDF 1.2 to support in-line version announcements. This allows for communicating to the parser which features of the syntax are used in the file.
 
-We extend this mechanism by adding three new version labels for RDF syntaxes that support RDF Messages (see [[#version-labels]]). If a parser encounters a version label with the "-messages" suffix, it should expect the file to `MESSAGE` directives. Therefore, if the parser does not support RDF Messages, it should reject the file as invalid.
+We extend this mechanism by adding three new version labels for RDF syntaxes that support RDF Messages (see [[#version-labels]]). If a parser encounters a version label with the "-messages" suffix, it should expect the file to contain `MESSAGE` directives. Therefore, if the parser does not support RDF Messages, it should reject the file as invalid.
 
 In N-Triples ([[!rdf12-n-triples]]) and N-Quads ([[!rdf12-n-quads]]), the version announcement has one legal form (`VERSION`):
 
@@ -468,6 +468,8 @@ directive        ::= versionDirective | messageDirective
 messageDirective ::= 'MESSAGE'
 ```
 
+`messageDirective` is a message delimiter.
+
 For example, this is an N-Triples file with two messages:
 
 <div class="example">
@@ -500,6 +502,18 @@ VERSION "1.2-messages"
 MESSAGE
 ```
 </div>
+
+Finally, this is a file with one message with one triple, followed by two empty messages:
+
+<div class="example">
+```turtle
+VERSION "1.2-messages"
+<http://example.org/message_1> <http://example.org/hasValue> "Hello, world!" .
+MESSAGE
+MESSAGE
+MESSAGE # last delimiter ignored, as it is not followed by statements or delimiters
+```
+
 
 For Turtle and TriG, the `directive` grammar production is extended as follows:
 
