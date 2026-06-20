@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version d113b2e81, updated Tue Jun 9 14:57:55 2026 -0700" name="generator">
   <link href="https://w3c-cg.github.io/rsp/spec/messages" rel="canonical">
-  <meta content="09500e524ee773de9902b8a2fdc79be303baffbf" name="revision">
+  <meta content="66a715f82dcc56a2191ec95ae99bf49221eba0d4" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 table { border-collapse: collapse }
@@ -2520,10 +2520,11 @@ This way, a <a data-link-type="dfn" href="#rdf-message-stream-consumer" id="ref-
     <li data-md>
      <p>When a delimiter is encountered, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑥">RDF Message</a> is finalized. The next message is opened only if a triple, quad, or another delimiter is encountered after the current delimiter.</p>
     <li data-md>
-     <p>If a delimiter is encountered before any triple or quad in the document, that means that the first message is empty.</p>
+     <p>If a delimiter is encountered before any triple or quad in the document, the first message is empty.</p>
     <li data-md>
-     <p>When the end of the file is reached, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑦">RDF Message</a> is finalized.</p>
+     <p>When the end of the file is reached, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑦">RDF Message</a> is finalized, if one is open.</p>
    </ol>
+   <p class="note" role="note"><span class="marker">Note:</span> A trailing delimiter immediately followed by EOF does not create an additional empty message.</p>
    <p class="note" role="note"><span class="marker">Note:</span> A dedicated message delimiter syntax is required because comments are ignored by RDF parsers and therefore cannot reliably delimit messages. Also, each message may have its own implicit context or profile, and blank node scoping is defined per message. A new syntax makes these message-level semantics explicit and avoids accidental cross-message assertions or blank node collisions.</p>
    <p>For N-Triples and N-Quads, the <code>directive</code> grammar production is extended as follows:</p>
 <pre class="highlight language-ebnf"><c- k>directive        </c->::<c- o>=</c-> <c- k>versionDirective </c-><c- p>|</c-> <c- k>messageDirective</c->
