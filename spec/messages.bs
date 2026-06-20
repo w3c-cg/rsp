@@ -513,7 +513,7 @@ MESSAGE
 MESSAGE
 MESSAGE # last delimiter ignored, as it is not followed by statements or delimiters
 ```
-
+</div>
 
 For Turtle and TriG, the `directive` grammar production is extended as follows:
 
