@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version d113b2e81, updated Tue Jun 9 14:57:55 2026 -0700" name="generator">
   <link href="https://w3c-cg.github.io/rsp/spec/messages" rel="canonical">
-  <meta content="66a715f82dcc56a2191ec95ae99bf49221eba0d4" name="revision">
+  <meta content="255c9913faf58cd8a54e1c9c3e79c9b1309a2151" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 table { border-collapse: collapse }
@@ -2248,8 +2248,18 @@ Parts of this work may be from another specification document.  If so, those par
       <li><a href="#rdf-message-streams"><span class="secno">1.2</span> <span class="content">RDF Message Streams</span></a>
       <li><a href="#scope"><span class="secno">1.3</span> <span class="content">Scope of RDF Messages</span></a>
       <li><a href="#producers-consumers"><span class="secno">1.4</span> <span class="content">RDF Message Stream Producers and Consumers</span></a>
-      <li><a href="#rdf-message-logs"><span class="secno">1.5</span> <span class="content">RDF Message Logs</span></a>
-      <li><a href="#version-labels"><span class="secno">1.6</span> <span class="content">Version labels</span></a>
+      <li>
+       <a href="#stream-discovery"><span class="secno">1.5</span> <span class="content">Discovering RDF Message Streams</span></a>
+       <ol class="toc">
+        <li><a href="#sse-live-streams"><span class="secno">1.5.1</span> <span class="content">Server-Sent Events</span></a>
+        <li><a href="#websocket-live-streams"><span class="secno">1.5.2</span> <span class="content">WebSockets</span></a>
+        <li><a href="#kafka-live-streams"><span class="secno">1.5.3</span> <span class="content">Kafka</span></a>
+        <li><a href="#mqtt-live-streams"><span class="secno">1.5.4</span> <span class="content">MQTT 5</span></a>
+        <li><a href="#message-broker-live-streams"><span class="secno">1.5.5</span> <span class="content">Other message brokers</span></a>
+        <li><a href="#jelly-grpc"><span class="secno">1.5.6</span> <span class="content">Jelly gRPC</span></a>
+       </ol>
+      <li><a href="#rdf-message-logs"><span class="secno">1.6</span> <span class="content">RDF Message Logs</span></a>
+      <li><a href="#version-labels"><span class="secno">1.7</span> <span class="content">Version labels</span></a>
      </ol>
     <li>
      <a href="#rdf-message-logs-serialization"><span class="secno">2</span> <span class="content">Serializing and parsing RDF Message Logs</span></a>
@@ -2375,7 +2385,123 @@ An MQTT broker (<a data-link-type="biblio" href="#biblio-mqtt-5" title="MQTT Ver
    </div>
    <p class="issue" id="issue-8a849945"><a class="self-link" href="#issue-8a849945"></a> Add a diagram illustrating RDF Messages, an RDF Message Stream, stream producers, and stream consumers.</p>
    <p class="issue" id="issue-4378f19c"><a class="self-link" href="#issue-4378f19c"></a> Find out and document the similarities/differences to the <a href="https://rdf.js.org/stream-spec/">RDF-JS Stream interface</a></p>
-   <h3 class="heading settled" data-level="1.5" id="rdf-message-logs"><span class="secno">1.5. </span><span class="content">RDF Message Logs</span><a class="self-link" href="#rdf-message-logs"></a></h3>
+   <h3 class="heading settled" data-level="1.5" id="stream-discovery"><span class="secno">1.5. </span><span class="content">Discovering RDF Message Streams</span><a class="self-link" href="#stream-discovery"></a></h3>
+   <p>A push-based or message-based channel can advertise that it carries <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message③">RDF Messages</a> by declaring the RDF media type of the payload at channel, subscription, or protocol-message level using <code>RDF-Message-Content-Type</code> or a protocol-native equivalent.</p>
+   <p>If a channel is declared to carry <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message④">RDF Messages</a>, each native protocol message MUST be interpreted as one <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑤">RDF Message</a>. Blank node identifiers are scoped to that protocol message only, and RDF data from different protocol messages MUST NOT be merged by default.</p>
+   <p>For JSON-LD payloads, a channel MAY provide an external JSON-LD context using the JSON-LD context link relation: <code>Link: &amp;lt;https://example.org/context.jsonld&amp;gt;; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"</code>. If a stream is identified by an IRI, the linked context for that stream IRI MUST remain stable for the lifetime of that stream.</p>
+   <h4 class="heading settled" data-level="1.5.1" id="sse-live-streams"><span class="secno">1.5.1. </span><span class="content">Server-Sent Events</span><a class="self-link" href="#sse-live-streams"></a></h4>
+   <p>A Server-Sent Events stream (<a data-link-type="biblio" href="#biblio-eventsource" title="Server-Sent Events">[EventSource]</a>) carrying <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑥">RDF Messages</a> MUST advertise <code>Content-Type: text/event-stream</code>. The producer MUST declare the RDF media type of event payloads using <code>RDF-Message-Content-Type</code>. Each SSE event MUST be interpreted as one <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑦">RDF Message</a>.</p>
+   <p>The value of <code>RDF-Message-Content-Type</code> MUST be an RDF media type for a serialization that can be represented in SSE <code>data</code> fields, such as <code>application/ld+json</code>, <code>text/turtle</code>, <code>application/trig</code>, <code>application/n-triples</code>, or <code>application/n-quads</code>. Binary RDF serializations, such as <code>application/x-jelly-rdf</code>, MUST NOT be sent directly in SSE <code>data</code> fields.</p>
+<pre class="highlight language-http">RDF-Message-Content-Type: &lt;rdf-media-type>
+</pre>
+   <div class="example" id="example-91fc7d2a">
+    <a class="self-link" href="#example-91fc7d2a"></a>
+
+
+<pre class="highlight language-http">Content-Type: text/event-stream
+Cache-Control: no-cache
+Link: &lt;https://example.org/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+RDF-Message-Content-Type: application/ld+json
+</pre>
+<pre class="highlight language-text">event: rdf-message
+data: {"@id":"https://example.org/s1","https://example.org/p":"value"}
+</pre>
+   </div>
+   <h4 class="heading settled" data-level="1.5.2" id="websocket-live-streams"><span class="secno">1.5.2. </span><span class="content">WebSockets</span><a class="self-link" href="#websocket-live-streams"></a></h4>
+   <p>A WebSocket stream (<a data-link-type="biblio" href="#biblio-websockets" title="WebSockets Standard">[WebSockets]</a>) carrying <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑧">RDF Messages</a> MUST declare the RDF media type using a <code>Sec-WebSocket-Protocol</code> subprotocol token in the opening handshake. A client MAY offer multiple RDF Message subprotocol tokens, each corresponding to a different RDF serialization. The server MUST select one of the offered subprotocol tokens and echo it in the opening handshake response. Each WebSocket message MUST be interpreted as one <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑨">RDF Message</a>.</p>
+   <p>The selected subprotocol token determines the RDF media type of all WebSocket messages on that connection:</p>
+   <ul>
+    <li data-md>
+     <p><code>rdfm.ld-json</code> means <code>application/ld+json</code>.</p>
+    <li data-md>
+     <p><code>rdfm.turtle</code> means <code>text/turtle</code>.</p>
+    <li data-md>
+     <p><code>rdfm.trig</code> means <code>application/trig</code>.</p>
+    <li data-md>
+     <p><code>rdfm.n-triples</code> means <code>application/n-triples</code>.</p>
+    <li data-md>
+     <p><code>rdfm.n-quads</code> means <code>application/n-quads</code>.</p>
+    <li data-md>
+     <p><code>rdfm.jelly</code> means <code>application/x-jelly-rdf</code>.</p>
+   </ul>
+   <p>When the selected RDF serialization is binary, such as <code>rdfm.jelly</code>, each <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①⓪">RDF Message</a> MUST be sent as a binary WebSocket message.</p>
+<pre class="highlight language-http">Sec-WebSocket-Protocol: &lt;rdf-message-subprotocol>, ...
+</pre>
+   <div class="example" id="example-3035b994">
+    <a class="self-link" href="#example-3035b994"></a>
+
+
+    <p>Client handshake request offering JSON-LD and N-Triples:</p>
+<pre class="highlight language-http"><c- nf>GET</c-> <c- nn>/stream</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Host</c-><c- o>:</c-> <c- l>example.org</c->
+<c- e>Upgrade</c-><c- o>:</c-> <c- l>websocket</c->
+<c- e>Connection</c-><c- o>:</c-> <c- l>Upgrade</c->
+<c- e>Sec-WebSocket-Key</c-><c- o>:</c-> <c- l>dGhlIHNhbXBsZSBub25jZQ==</c->
+<c- e>Sec-WebSocket-Version</c-><c- o>:</c-> <c- l>13</c->
+<c- e>Sec-WebSocket-Protocol</c-><c- o>:</c-> <c- l>rdfm.ld-json, rdfm.n-triples</c->
+</pre>
+    <p>Server handshake response selecting N-Triples:</p>
+<pre class="highlight language-http"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>101</c-> <c- ne>Switching Protocols</c->
+<c- e>Upgrade</c-><c- o>:</c-> <c- l>websocket</c->
+<c- e>Connection</c-><c- o>:</c-> <c- l>Upgrade</c->
+<c- e>Sec-WebSocket-Accept</c-><c- o>:</c-> <c- l>s3pPLMBiTxaQ9kYGzzhZRbK+xOo=</c->
+<c- e>Sec-WebSocket-Protocol</c-><c- o>:</c-> <c- l>rdfm.n-triples</c->
+</pre>
+<pre class="highlight language-text">WebSocket message:
+&lt;https://example.org/s1> &lt;https://example.org/p> &lt;https://example.org/o1> .
+</pre>
+   </div>
+   <h4 class="heading settled" data-level="1.5.3" id="kafka-live-streams"><span class="secno">1.5.3. </span><span class="content">Kafka</span><a class="self-link" href="#kafka-live-streams"></a></h4>
+   <p>A Kafka topic carrying <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①①">RDF Messages</a> MUST declare the RDF media type using <code>RDF-Message-Content-Type</code> in record headers or topic metadata. Each Kafka record MUST be interpreted as one <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①②">RDF Message</a>.</p>
+   <p>The value of <code>RDF-Message-Content-Type</code> MUST be an RDF media type.</p>
+<pre class="highlight language-text">RDF-Message-Content-Type: &lt;rdf-media-type>
+</pre>
+   <div class="example" id="example-4fd1485d">
+    <a class="self-link" href="#example-4fd1485d"></a>
+
+
+<pre class="highlight language-text">topic: observations
+headers:
+  RDF-Message-Content-Type: application/n-triples
+value:
+  &lt;https://example.org/s1> &lt;https://example.org/p> &lt;https://example.org/o1> .
+</pre>
+   </div>
+   <h4 class="heading settled" data-level="1.5.4" id="mqtt-live-streams"><span class="secno">1.5.4. </span><span class="content">MQTT 5</span><a class="self-link" href="#mqtt-live-streams"></a></h4>
+   <p>An MQTT 5 (<a data-link-type="biblio" href="#biblio-mqtt-5" title="MQTT Version 5.0">[mqtt-5]</a>) topic carrying <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①③">RDF Messages</a> MUST declare the RDF media type using the PUBLISH <code>Content Type</code> property. Each MQTT PUBLISH packet MUST be interpreted as one <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①④">RDF Message</a>.</p>
+   <p>The value of <code>Content Type</code> MUST be an RDF media type.</p>
+<pre class="highlight language-text">Content Type: &lt;rdf-media-type>
+</pre>
+   <div class="example" id="example-5e4dc4e4">
+    <a class="self-link" href="#example-5e4dc4e4"></a>
+
+
+<pre class="highlight language-text">PUBLISH topic: observations
+Content Type: application/ld+json
+Payload: {"@id":"https://example.org/s1","https://example.org/p":"value"}
+</pre>
+   </div>
+   <h4 class="heading settled" data-level="1.5.5" id="message-broker-live-streams"><span class="secno">1.5.5. </span><span class="content">Other message brokers</span><a class="self-link" href="#message-broker-live-streams"></a></h4>
+   <p>AMQP, NATS, Pulsar, and similar message brokers carrying <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①⑤">RDF Messages</a> MUST declare the RDF media type using <code>RDF-Message-Content-Type</code> in message properties, message headers, stream metadata, or equivalent broker metadata. Each broker message MUST be interpreted as one <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①⑥">RDF Message</a>.</p>
+   <p>The value of <code>RDF-Message-Content-Type</code>, or the protocol-native content type property, MUST be an RDF media type.</p>
+<pre class="highlight language-text">RDF-Message-Content-Type: &lt;rdf-media-type>
+</pre>
+   <div class="example" id="example-9d8bdc6e">
+    <a class="self-link" href="#example-9d8bdc6e"></a>
+
+
+<pre class="highlight language-text">headers:
+  RDF-Message-Content-Type: application/trig
+body:
+  &lt;https://example.org/g> {
+    &lt;https://example.org/s1> &lt;https://example.org/p> &lt;https://example.org/o1> .
+  }
+</pre>
+   </div>
+   <h4 class="heading settled" data-level="1.5.6" id="jelly-grpc"><span class="secno">1.5.6. </span><span class="content">Jelly gRPC</span><a class="self-link" href="#jelly-grpc"></a></h4>
+   <p>See https://w3id.org/jelly/dev/specification/streaming/</p>
+   <p>Every RdfStreamFrame is in fact an RDF Message.</p>
+   <h3 class="heading settled" data-level="1.6" id="rdf-message-logs"><span class="secno">1.6. </span><span class="content">RDF Message Logs</span><a class="self-link" href="#rdf-message-logs"></a></h3>
    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="rdf-message-log">RDF Message Log</dfn> is a static representation of an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream⑧">RDF Message Stream</a>, which can be used for archiving, sharing, and processing the messages in the stream at a later point in time.</p>
    <p>The log can be serialized from an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream⑨">RDF Message Stream</a>, and/or deserialized into an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream①⓪">RDF Message Stream</a>.</p>
    <figure>
@@ -2396,12 +2522,12 @@ MESSAGE <c- c># another observation</c->
     <c- nn>sosa</c-><c- p>:</c-><c- f>hasSimpleResult</c-> <c- s>"..."</c-> <c- p>.</c->	
 </pre>
     </div>
-    <figcaption>Example of an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log①">RDF Message Log</a> publishing the <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message③">RDF Messages</a> that appeared in a stream so far.</figcaption>
+    <figcaption>Example of an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log①">RDF Message Log</a> publishing the <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①⑦">RDF Messages</a> that appeared in a stream so far.</figcaption>
    </figure>
    <p class="issue" id="issue-3e872813"><a class="self-link" href="#issue-3e872813"></a> Can we provide an example of an RDF Message Log that does not use any of the formats that we define in the next section, to illustrate the concept of an RDF Message Log without relying on the syntax of a specific format?</p>
    <p class="note" role="note"><span class="marker">Note:</span> A producer may want to indicate that a certain property is used to indicate the timestamp of when the message was created. This can be done, for example, using <code>ldes:timestampPath</code> from <a href="https://w3id.org/ldes/specification">Linked Data Event Streams</a>. Alternatively, when vocabularies such as ActivityStreams, SSN/SOSA, or PROV-O are used, one can just assume the respective properties <code>as:published</code>, <code>sosa:resultTime</code>, or <code>prov:generatedAtTime</code> are going to be used for this purpose.</p>
    <p>Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.</p>
-   <h3 class="heading settled" data-level="1.6" id="version-labels"><span class="secno">1.6. </span><span class="content">Version labels</span><a class="self-link" href="#version-labels"></a></h3>
+   <h3 class="heading settled" data-level="1.7" id="version-labels"><span class="secno">1.7. </span><span class="content">Version labels</span><a class="self-link" href="#version-labels"></a></h3>
    <p>RDF 1.2 <a data-link-type="biblio" href="#biblio-rdf12-concepts" title="RDF 1.2 Concepts and Abstract Data Model">[rdf12-concepts]</a> defines version labels, which identify the syntax and semantics conformance for the RDF data. RDF 1.2 defines three version labels: "1.1", "1.2", and "1.2-basic". RDF Messages extends this scheme with three new version labels, as shown in the table below.</p>
    <figure class="table">
     <figcaption class="table">Version labels for RDF Messages.</figcaption>
@@ -2476,14 +2602,14 @@ Requesting a TriG RDF Message Log with RDF 1.1 semantics:
 </pre>
    </div>
    <h2 class="heading settled" data-level="2" id="rdf-message-logs-serialization"><span class="secno">2. </span><span class="content">Serializing and parsing RDF Message Logs</span><a class="self-link" href="#rdf-message-logs-serialization"></a></h2>
-   <p>In this specification we propose that all RDF serializations MUST implement a way to group quads into <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message④">RDF Messages</a>.
+   <p>In this specification we propose that all RDF serializations MUST implement a way to group quads into <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①⑧">RDF Messages</a>.
 This way, a <a data-link-type="dfn" href="#rdf-message-stream-consumer" id="ref-for-rdf-message-stream-consumer">RDF Message Stream Consumer</a> can write the stream into an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log②">RDF Message Log</a> that can be read again by a <a data-link-type="dfn" href="#rdf-message-stream-producer" id="ref-for-rdf-message-stream-producer">RDF Message Stream Producer</a> into an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream①①">RDF Message Stream</a>.</p>
    <p class="note" role="note"><span class="marker">Note:</span> While we do define content types for the RDF Message Log serialization formats, this does not imply that the serialization needs to be used over HTTP only. The use of alternative transport mechanisms is equally valid and encouraged.</p>
    <h3 class="heading settled" data-level="2.1" id="turtle"><span class="secno">2.1. </span><span class="content">N-Triples, N-Quads, Turtle, and TriG</span><a class="self-link" href="#turtle"></a></h3>
    <p>We propose to extend the existing N-Triples, N-Quads, Turtle, and TriG formats to support RDF Messages. These extended formats are NOT backwards-compatible with existing parsers, as they require support for the new <a href="#message-delimiters">§ 2.1.2 Message delimiters</a> syntax.</p>
    <h4 class="heading settled" data-level="2.1.1" id="version-announcement"><span class="secno">2.1.1. </span><span class="content">Version announcement</span><a class="self-link" href="#version-announcement"></a></h4>
    <p>Concrete RDF syntaxes (e.g., <a data-link-type="biblio" href="#biblio-rdf12-turtle" title="RDF 1.2 Turtle">[rdf12-turtle]</a>) are being revised in RDF 1.2 to support in-line version announcements. This allows for communicating to the parser which features of the syntax are used in the file.</p>
-   <p>We extend this mechanism by adding three new version labels for RDF syntaxes that support RDF Messages (see <a href="#version-labels">§ 1.6 Version labels</a>). If a parser encounters a version label with the "-messages" suffix, it should expect the file to <code>MESSAGE</code> directives. Therefore, if the parser does not support RDF Messages, it should reject the file as invalid.</p>
+   <p>We extend this mechanism by adding three new version labels for RDF syntaxes that support RDF Messages (see <a href="#version-labels">§ 1.7 Version labels</a>). If a parser encounters a version label with the "-messages" suffix, it should expect the file to <code>MESSAGE</code> directives. Therefore, if the parser does not support RDF Messages, it should reject the file as invalid.</p>
    <p>In N-Triples (<a data-link-type="biblio" href="#biblio-rdf12-n-triples" title="RDF 1.2 N-Triples">[rdf12-n-triples]</a>) and N-Quads (<a data-link-type="biblio" href="#biblio-rdf12-n-quads" title="RDF 1.2 N-Quads">[rdf12-n-quads]</a>), the version announcement has one legal form (<code>VERSION</code>):</p>
    <div class="example" id="example-d96504e1">
     <a class="self-link" href="#example-d96504e1"></a>
@@ -2514,15 +2640,15 @@ This way, a <a data-link-type="dfn" href="#rdf-message-stream-consumer" id="ref-
    <p>When the version label of the document being parsed has the "-messages" suffix, the parser MUST:</p>
    <ol>
     <li data-md>
-     <p>Consider every triple or quad in the document as part of an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑤">RDF Message</a>.</p>
+     <p>Consider every triple or quad in the document as part of an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①⑨">RDF Message</a>.</p>
     <li data-md>
      <p>Triples or quads are added to the current message as long as no delimiter or EOF has been encountered.</p>
     <li data-md>
-     <p>When a delimiter is encountered, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑥">RDF Message</a> is finalized. The next message is opened only if a triple, quad, or another delimiter is encountered after the current delimiter.</p>
+     <p>When a delimiter is encountered, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②⓪">RDF Message</a> is finalized. The next message is opened only if a triple, quad, or another delimiter is encountered after the current delimiter.</p>
     <li data-md>
      <p>If a delimiter is encountered before any triple or quad in the document, the first message is empty.</p>
     <li data-md>
-     <p>When the end of the file is reached, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑦">RDF Message</a> is finalized, if one is open.</p>
+     <p>When the end of the file is reached, the current <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②①">RDF Message</a> is finalized, if one is open.</p>
    </ol>
    <p class="note" role="note"><span class="marker">Note:</span> A trailing delimiter immediately followed by EOF does not create an additional empty message.</p>
    <p class="note" role="note"><span class="marker">Note:</span> A dedicated message delimiter syntax is required because comments are ignored by RDF parsers and therefore cannot reliably delimit messages. Also, each message may have its own implicit context or profile, and blank node scoping is defined per message. A new syntax makes these message-level semantics explicit and avoids accidental cross-message assertions or blank node collisions.</p>
@@ -2631,7 +2757,7 @@ MESSAGE
     <li data-md>
      <p>For each parsed line <code>L</code>, where <code>L</code> is a JSON object:</p>
     <li data-md>
-     <p>If <code>L</code> is <code>{}</code> (an empty message), emit one empty <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑧">RDF Message</a>. The value of <code>C</code> is unchanged.</p>
+     <p>If <code>L</code> is <code>{}</code> (an empty message), emit one empty <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②②">RDF Message</a>. The value of <code>C</code> is unchanged.</p>
     <li data-md>
      <p>Else if <code>L</code> has exactly one key <code>@context</code> (a context message), set <code>C = L["@context"]</code>.</p>
     <li data-md>
@@ -2644,7 +2770,7 @@ MESSAGE
       <li data-md>
        <p>If <code>C</code> is set, set <code>D = {"@context": C, "@graph": L}</code>.</p>
       <li data-md>
-       <p>Expand and convert <code>D</code> to RDF, and emit the resulting <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message⑨">RDF Message</a>.</p>
+       <p>Expand and convert <code>D</code> to RDF, and emit the resulting <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②③">RDF Message</a>.</p>
      </ol>
    </ol>
    <p>Context messages may appear anywhere in the stream and overwrite the previously active context. This allows context changes over time while keeping data messages compact.</p>
@@ -2664,7 +2790,7 @@ MESSAGE
    </figure>
    <h3 class="heading settled" data-level="2.3" id="yaml-ld"><span class="secno">2.3. </span><span class="content">YAML-LD</span><a class="self-link" href="#yaml-ld"></a></h3>
    <p class="issue" id="issue-484cf451"><a class="self-link" href="#issue-484cf451"></a> Tracked as <a href="https://github.com/w3c-cg/rsp/issues/4">w3c-cg/rsp issue #4</a>. The format proposed here is incompatible with the <a href="https://www.w3.org/community/reports/json-ld/CG-FINAL-yaml-ld-20231206/">YAML-LD Final Community Group Report</a>, which proposes to instead transform YAML streams into a top-level array in a JSON-LD document. The discussion on this topic is still on-going and must be resolved in collaboration with the newly-rechartered JSON-LD WG.</p>
-   <p>The <a data-link-type="biblio" href="#biblio-yaml" title="YAML Ain’t Markup Language (YAML™) Version 1.2">[YAML]</a> format includes built-in support for <em>YAML streams</em>, where multiple YAML documents are concatenated together, with each document being separated typically by a line containing three dashes (<code>---</code>). We propose to use that mechanism to serialize <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log④">RDF Message Logs</a>, where each YAML document corresponds to an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①⓪">RDF Message</a>.</p>
+   <p>The <a data-link-type="biblio" href="#biblio-yaml" title="YAML Ain’t Markup Language (YAML™) Version 1.2">[YAML]</a> format includes built-in support for <em>YAML streams</em>, where multiple YAML documents are concatenated together, with each document being separated typically by a line containing three dashes (<code>---</code>). We propose to use that mechanism to serialize <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log④">RDF Message Logs</a>, where each YAML document corresponds to an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②④">RDF Message</a>.</p>
    <p>This is made discoverable with a new content-type: <code>Content-Type: application/rdfm+yaml</code></p>
    <p class="issue" id="issue-445e2631"><a class="self-link" href="#issue-445e2631"></a> Is this the correct content type?</p>
    <figure>
@@ -2696,14 +2822,15 @@ MESSAGE
    <p class="issue" id="issue-3722c532"><a class="self-link" href="#issue-3722c532"></a> Is there a different industry-standard way to serialize multiple RDF/XML documents into a single file?</p>
    <h3 class="heading settled" data-level="2.5" id="other-formats"><span class="secno">2.5. </span><span class="content">Other formats</span><a class="self-link" href="#other-formats"></a></h3>
    <p>Efficient interchange of <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log⑦">RDF Message Logs</a> may also be done using binary RDF serializations, such as <a href="https://w3id.org/jelly/">Jelly</a>, which already has built-in support for grouping quads into messages. We propose that Jelly and similar formats use the definitions from this specification to define the semantics of RDF Messages.</p>
+   <p>In Jelly, each RdfStreamFrame is an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②⑤">RDF Message</a>.</p>
    <h2 class="heading settled" data-level="3" id="rdf-message-stream-profiles"><span class="secno">3. </span><span class="content">RDF Message Stream Profiles</span><a class="self-link" href="#rdf-message-stream-profiles"></a></h2>
    <p class="issue" id="issue-3097b136"><a class="self-link" href="#issue-3097b136"></a> Write down the section on profiles. Tracked as <a href="https://github.com/w3c-cg/rsp/issues/1">w3c-cg/rsp issue #1</a>.</p>
    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="rdf-message-stream-profile">RDF Message Stream Profile</dfn> is a ... (TODO)</p>
    <h2 class="heading settled" data-level="4" id="examples"><span class="secno">4. </span><span class="content">Examples and use cases</span><a class="self-link" href="#examples"></a></h2>
    <h3 class="heading settled" data-level="4.1" id="stream-archive"><span class="secno">4.1. </span><span class="content">An archive of an RDF Stream</span><a class="self-link" href="#stream-archive"></a></h3>
-   <p>When you write out an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log⑧">RDF Message Log</a> into a file, all <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①①">RDF Messages</a> are preserved when deserializing it again.
+   <p>When you write out an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log⑧">RDF Message Log</a> into a file, all <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②⑥">RDF Messages</a> are preserved when deserializing it again.
 They are streamed out in the same order as they were written into the file.</p>
-   <p>Without the semantics of an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①②">RDF Message</a>, and without the syntax for it, trying to reconstruct the intended message becomes slow and cannot be solved without using sub-optimal heuristics.
+   <p>Without the semantics of an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②⑦">RDF Message</a>, and without the syntax for it, trying to reconstruct the intended message becomes slow and cannot be solved without using sub-optimal heuristics.
 The performance loss is due to the fact that there could always be another quad at the end of the file that still needs to be considered for the message, as you cannot rely on the quads being grouped together.
 A heuristic is needed as you can only guess that e.g. subject-based star patterns, or maybe a <a data-link-type="biblio" href="#biblio-cbd" title="CBD - Concise Bounded Description">[CBD]</a>, or maybe a named graph is going to be used.
 This is what is being used by <a href="https://semiceu.github.io/LinkedDataEventStreams/#members">the Linked Data Event Streams “member extraction” step</a>.</p>
@@ -2735,7 +2862,7 @@ This is what is being used by <a href="https://semiceu.github.io/LinkedDataEvent
     <figcaption>If the query engine would support RDF Message Logs to indicate that groups of triples are part of a certain result, it would speed up clients that want to use the message as a meaningful concept.</figcaption>
    </figure>
    <p>The example (Test it using the <a href="https://dbpedia.org/sparql">DBpedia SPARQL endpoint</a>) generates 10000 companies in countries and lists the population number of the country.
-Now imagine that a consumer wants to process the results of this SPARQL query, where each construct result is an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①③">RDF Message</a>.
+Now imagine that a consumer wants to process the results of this SPARQL query, where each construct result is an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②⑧">RDF Message</a>.
 While the server could have grouped the quads for the consumer, the consumer will have to re-construct the BGP in the CONSTRUCT clause again on the client before it can proceed.
 The obvious solution here is to use an <a data-link-type="dfn" href="#rdf-message-stream" id="ref-for-rdf-message-stream①②">RDF Message Stream</a>.</p>
    <h3 class="heading settled" data-level="4.3" id="riverbench-dataset-distributions"><span class="secno">4.3. </span><span class="content">RiverBench dataset distributions</span><a class="self-link" href="#riverbench-dataset-distributions"></a></h3>
@@ -2766,7 +2893,7 @@ This could be greatly improved by using an <a data-link-type="dfn" href="#rdf-me
    <p>As an alternative, <a href="https://w3id.org/jelly">Jelly-RDF</a> distributions are also available, where the entire stream is serialized as a single <code>.jelly</code> file. In the file, one <a href="https://w3id.org/jelly/dev/user-guide/#stream-frames">Jelly frame</a> corresponds to one RDF dataset. Under this specification, this would be a valid <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log①⓪">RDF Message Log</a> serialization.</p>
    <h3 class="heading settled" data-level="4.4" id="nanopublications"><span class="secno">4.4. </span><span class="content">Nanopublications</span><a class="self-link" href="#nanopublications"></a></h3>
    <p>A <a href="https://nanopub.net/">Nanopublication</a> is a small RDF dataset that contains an assertion, its provenance, and publication information. Nanopublications are stored and exchanged by a network of services (registries and query endpoints). Exchanging each Nanopublication individually leads to significant overhead, due to repeated HTTP requests necessitated by the lack of a format for grouping multiple Nanopublications together. This issue was resolved by using <a href="https://w3id.org/jelly/">Jelly</a> to serialize multiple Nanopublications into a single byte stream, where each Nanopublication corresponds to a <a href="https://w3id.org/jelly/dev/user-guide/#stream-frames">Jelly frame</a>.</p>
-   <p>Using an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log①①">RDF Message Log</a> serialization to group multiple Nanopublications into a single file would also solve this problem, while still allowing each Nanopublication to be processed individually as an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message①④">RDF Message</a>.</p>
+   <p>Using an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log①①">RDF Message Log</a> serialization to group multiple Nanopublications into a single file would also solve this problem, while still allowing each Nanopublication to be processed individually as an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②⑨">RDF Message</a>.</p>
   </main>
   <div data-fill-with="conformance">
    <h2 class="heading no-num no-ref settled" id="conformance"><span class="content">
@@ -2934,7 +3061,7 @@ This could be greatly improved by using an <a data-link-type="dfn" href="#rdf-me
   <h3 class="heading no-num no-ref settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#rdf-message">RDF Message</a><span>, in § 1.1</span>
-   <li><a href="#rdf-message-log">RDF Message Log</a><span>, in § 1.5</span>
+   <li><a href="#rdf-message-log">RDF Message Log</a><span>, in § 1.6</span>
    <li><a href="#rdf-message-stream">RDF Message Stream</a><span>, in § 1.2</span>
    <li><a href="#rdf-message-stream-consumer">RDF Message Stream Consumer</a><span>, in § 1.4</span>
    <li><a href="#rdf-message-stream-producer">RDF Message Stream Producer</a><span>, in § 1.4</span>
@@ -3195,9 +3322,9 @@ function parseHTML(markup) {
 "use strict";
 {
 let dfnPanelData = {
-"rdf-message": {"dfnID":"rdf-message","dfnText":"RDF Message","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message"}],"title":"1.2. RDF Message Streams"},{"refs":[{"id":"ref-for-rdf-message\u2460"}],"title":"1.3. Scope of RDF Messages"},{"refs":[{"id":"ref-for-rdf-message\u2461"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message\u2462"}],"title":"1.5. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message\u2463"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message\u2464"},{"id":"ref-for-rdf-message\u2465"},{"id":"ref-for-rdf-message\u2466"}],"title":"2.1.2. Message delimiters"},{"refs":[{"id":"ref-for-rdf-message\u2467"},{"id":"ref-for-rdf-message\u2468"}],"title":"2.2. JSON-LD"},{"refs":[{"id":"ref-for-rdf-message\u2460\u24ea"}],"title":"2.3. YAML-LD"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2460"},{"id":"ref-for-rdf-message\u2460\u2461"}],"title":"4.1. An archive of an RDF Stream"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2462"}],"title":"4.2. SPARQL CONSTRUCT results"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2463"}],"title":"4.4. Nanopublications"}],"url":"#rdf-message"},
-"rdf-message-log": {"dfnID":"rdf-message-log","dfnText":"RDF Message Log","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-log"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message-log\u2460"}],"title":"1.5. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-log\u2461"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-log\u2462"}],"title":"2.2. JSON-LD"},{"refs":[{"id":"ref-for-rdf-message-log\u2463"},{"id":"ref-for-rdf-message-log\u2464"}],"title":"2.3. YAML-LD"},{"refs":[{"id":"ref-for-rdf-message-log\u2465"}],"title":"2.4. RDF/XML"},{"refs":[{"id":"ref-for-rdf-message-log\u2466"}],"title":"2.5. Other formats"},{"refs":[{"id":"ref-for-rdf-message-log\u2467"}],"title":"4.1. An archive of an RDF Stream"},{"refs":[{"id":"ref-for-rdf-message-log\u2468"},{"id":"ref-for-rdf-message-log\u2460\u24ea"}],"title":"4.3. RiverBench dataset distributions"},{"refs":[{"id":"ref-for-rdf-message-log\u2460\u2460"}],"title":"4.4. Nanopublications"}],"url":"#rdf-message-log"},
-"rdf-message-stream": {"dfnID":"rdf-message-stream","dfnText":"RDF Message Stream","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-stream"}],"title":"1.3. Scope of RDF Messages"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460"},{"id":"ref-for-rdf-message-stream\u2461"},{"id":"ref-for-rdf-message-stream\u2462"},{"id":"ref-for-rdf-message-stream\u2463"},{"id":"ref-for-rdf-message-stream\u2464"},{"id":"ref-for-rdf-message-stream\u2465"},{"id":"ref-for-rdf-message-stream\u2466"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message-stream\u2467"},{"id":"ref-for-rdf-message-stream\u2468"},{"id":"ref-for-rdf-message-stream\u2460\u24ea"}],"title":"1.5. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460\u2460"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460\u2461"}],"title":"4.2. SPARQL CONSTRUCT results"}],"url":"#rdf-message-stream"},
+"rdf-message": {"dfnID":"rdf-message","dfnText":"RDF Message","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message"}],"title":"1.2. RDF Message Streams"},{"refs":[{"id":"ref-for-rdf-message\u2460"}],"title":"1.3. Scope of RDF Messages"},{"refs":[{"id":"ref-for-rdf-message\u2461"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message\u2462"},{"id":"ref-for-rdf-message\u2463"},{"id":"ref-for-rdf-message\u2464"}],"title":"1.5. Discovering RDF Message Streams"},{"refs":[{"id":"ref-for-rdf-message\u2465"},{"id":"ref-for-rdf-message\u2466"}],"title":"1.5.1. Server-Sent Events"},{"refs":[{"id":"ref-for-rdf-message\u2467"},{"id":"ref-for-rdf-message\u2468"},{"id":"ref-for-rdf-message\u2460\u24ea"}],"title":"1.5.2. WebSockets"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2460"},{"id":"ref-for-rdf-message\u2460\u2461"}],"title":"1.5.3. Kafka"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2462"},{"id":"ref-for-rdf-message\u2460\u2463"}],"title":"1.5.4. MQTT 5"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2464"},{"id":"ref-for-rdf-message\u2460\u2465"}],"title":"1.5.5. Other message brokers"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2466"}],"title":"1.6. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2467"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message\u2460\u2468"},{"id":"ref-for-rdf-message\u2461\u24ea"},{"id":"ref-for-rdf-message\u2461\u2460"}],"title":"2.1.2. Message delimiters"},{"refs":[{"id":"ref-for-rdf-message\u2461\u2461"},{"id":"ref-for-rdf-message\u2461\u2462"}],"title":"2.2. JSON-LD"},{"refs":[{"id":"ref-for-rdf-message\u2461\u2463"}],"title":"2.3. YAML-LD"},{"refs":[{"id":"ref-for-rdf-message\u2461\u2464"}],"title":"2.5. Other formats"},{"refs":[{"id":"ref-for-rdf-message\u2461\u2465"},{"id":"ref-for-rdf-message\u2461\u2466"}],"title":"4.1. An archive of an RDF Stream"},{"refs":[{"id":"ref-for-rdf-message\u2461\u2467"}],"title":"4.2. SPARQL CONSTRUCT results"},{"refs":[{"id":"ref-for-rdf-message\u2461\u2468"}],"title":"4.4. Nanopublications"}],"url":"#rdf-message"},
+"rdf-message-log": {"dfnID":"rdf-message-log","dfnText":"RDF Message Log","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-log"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message-log\u2460"}],"title":"1.6. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-log\u2461"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-log\u2462"}],"title":"2.2. JSON-LD"},{"refs":[{"id":"ref-for-rdf-message-log\u2463"},{"id":"ref-for-rdf-message-log\u2464"}],"title":"2.3. YAML-LD"},{"refs":[{"id":"ref-for-rdf-message-log\u2465"}],"title":"2.4. RDF/XML"},{"refs":[{"id":"ref-for-rdf-message-log\u2466"}],"title":"2.5. Other formats"},{"refs":[{"id":"ref-for-rdf-message-log\u2467"}],"title":"4.1. An archive of an RDF Stream"},{"refs":[{"id":"ref-for-rdf-message-log\u2468"},{"id":"ref-for-rdf-message-log\u2460\u24ea"}],"title":"4.3. RiverBench dataset distributions"},{"refs":[{"id":"ref-for-rdf-message-log\u2460\u2460"}],"title":"4.4. Nanopublications"}],"url":"#rdf-message-log"},
+"rdf-message-stream": {"dfnID":"rdf-message-stream","dfnText":"RDF Message Stream","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-stream"}],"title":"1.3. Scope of RDF Messages"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460"},{"id":"ref-for-rdf-message-stream\u2461"},{"id":"ref-for-rdf-message-stream\u2462"},{"id":"ref-for-rdf-message-stream\u2463"},{"id":"ref-for-rdf-message-stream\u2464"},{"id":"ref-for-rdf-message-stream\u2465"},{"id":"ref-for-rdf-message-stream\u2466"}],"title":"1.4. RDF Message Stream Producers and Consumers"},{"refs":[{"id":"ref-for-rdf-message-stream\u2467"},{"id":"ref-for-rdf-message-stream\u2468"},{"id":"ref-for-rdf-message-stream\u2460\u24ea"}],"title":"1.6. RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460\u2460"}],"title":"2. Serializing and parsing RDF Message Logs"},{"refs":[{"id":"ref-for-rdf-message-stream\u2460\u2461"}],"title":"4.2. SPARQL CONSTRUCT results"}],"url":"#rdf-message-stream"},
 "rdf-message-stream-consumer": {"dfnID":"rdf-message-stream-consumer","dfnText":"RDF Message Stream Consumer","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-stream-consumer"}],"title":"2. Serializing and parsing RDF Message Logs"}],"url":"#rdf-message-stream-consumer"},
 "rdf-message-stream-producer": {"dfnID":"rdf-message-stream-producer","dfnText":"RDF Message Stream Producer","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-stream-producer"}],"title":"2. Serializing and parsing RDF Message Logs"}],"url":"#rdf-message-stream-producer"},
 "rdf-message-stream-profile": {"dfnID":"rdf-message-stream-profile","dfnText":"RDF Message Stream Profile","external":false,"refSections":[{"refs":[{"id":"ref-for-rdf-message-stream-profile"},{"id":"ref-for-rdf-message-stream-profile\u2460"}],"title":"1.3. Scope of RDF Messages"}],"url":"#rdf-message-stream-profile"},
