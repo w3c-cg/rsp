@@ -269,6 +269,105 @@ Message 2:
   <http://example.org/d> <http://example.org/e> <http://example.org/f> .
 ```
 
+## Parsing Tests for NDJSON-LD ## {#parsing-tests-json-ld-message-logs}
+
+In these tests, each input line is one JSON object. Context messages update parser state but do not emit RDF messages. A parser maintains an active context that is updated by context messages.
+
+### Context Message Followed By Data Message ### {#context-message-followed-by-data-message}
+
+Input:
+
+```json
+{"@context": "https://schema.org/"}
+{"@type": "Product", "name": "Hairdryer DRY 2000", "color": "red"}
+```
+
+Expected messages:
+
+```text
+Message 1:
+  RDF dataset obtained by interpreting the second JSON object with @context = "https://schema.org/".
+```
+
+### Empty Message Does Not Change Active Context ### {#empty-message-does-not-change-active-context}
+
+Input:
+
+```json
+{"@context": "https://schema.org/"}
+{}
+{"@type": "Product", "name": "27-inch 4K Monitor 2700P", "color": "black"}
+```
+
+Expected messages:
+
+```text
+Message 1:
+  empty
+
+Message 2:
+  RDF dataset obtained by interpreting the third JSON object with @context = "https://schema.org/".
+```
+
+### Context Switch Applies To Subsequent Data Messages ### {#context-switch-applies-to-subsequent-data-messages}
+
+Input:
+
+```json
+{"@context": "https://schema.org/"}
+{"@type": "Product", "name": "Hairdryer DRY 2000", "color": "red"}
+{"@context": "https://example.org/other-vocab/"}
+{"@type": "OtherType", "name": "Piotr"}
+```
+
+Expected messages:
+
+```text
+Message 1:
+  RDF dataset obtained by interpreting the second JSON object with @context = "https://schema.org/".
+
+Message 2:
+  RDF dataset obtained by interpreting the fourth JSON object with @context = "https://example.org/other-vocab/".
+```
+
+### Data Message With Local `@context` Is Wrapped With Active Context ### {#data-message-context-is-combined-with-active-context}
+
+Input:
+
+```json
+{"@context": {"ex": "https://example.org/base/", "name": "ex:baseName"}}
+{"@context": {"label": "ex:label"}, "@type": "ex:Thing", "name": "Alice", "label": "A"}
+{"@type": "ex:Thing", "name": "Bob"}
+```
+
+Expected messages:
+
+```text
+Message 1:
+  RDF dataset obtained by processing the effective JSON-LD document:
+  {"@context": {"ex": "https://example.org/base/", "name": "ex:baseName"}, "@graph": {"@context": {"label": "ex:label"}, "@type": "ex:Thing", "name": "Alice", "label": "A"}}
+
+Message 2:
+  RDF dataset obtained by processing the effective JSON-LD document:
+  {"@context": {"ex": "https://example.org/base/", "name": "ex:baseName"}, "@graph": {"@type": "ex:Thing", "name": "Bob"}}
+  The local @context from line 2 does not change the active context C for subsequent messages.
+```
+
+### Data Message Without Prior Context Is Allowed ### {#data-message-without-prior-context-is-allowed}
+
+Input:
+
+```json
+{"@id": "https://example.org/p1", "@type": "https://example.org/Product"}
+```
+
+Expected messages:
+
+```text
+Message 1:
+  RDF dataset obtained by interpreting the JSON object as regular JSON-LD, without a stream-level active context.
+```
+
 ## Serialization Tests for Turtle, TriG, N-Triples, and N-Quads ## {#serialization-tests-turtle-trig-n-triples-n-quads}
 
 Given a sequence of RDF Messages, a serializer should write a document that can be parsed back into the same sequence of messages and quads.

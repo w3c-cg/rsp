@@ -411,18 +411,46 @@ ex:person ex:says "Goodbye, world!" .
 
 Issue: This discussion is preliminary, yet on-going, in the JSON-LD group itself with a proposal called [newline delimited JSON-LD](https://github.com/json-ld/ndjson-ld/issues/1). We propose that that specification becomes the preferred way of adding messages support in JSON-LD. It is [already implemented in some libraries](https://github.com/eclipse-rdf4j/rdf4j/issues/2840) and it is already being used in some projects.
 
-We propose to use the [unofficial NDJSON-LD format](https://github.com/json-ld/ndjson-ld) as the serialization format for [=RDF Message Logs=] in JSON-LD. In [NDJSON](https://github.com/ndjson/ndjson-spec), multiple JSON objects are concatenated together, with each object being separated by a newline character (`\n`). NDJSON-LD simply applies this format to JSON-LD documents, where each each line corresponds to an [=RDF Message=].
+In the [NDJSON](https://github.com/ndjson/ndjson-spec) spec, multiple JSON objects are concatenated together, with each object being separated by a newline character (`\n`). Our proposal for NDJSON-LD applies this format to JSON-LD documents.
+
+Each line in the log MUST be exactly one JSON object. Blank lines are not allowed.
+
+To avoid repeating `@context` in every message while still keeping the format simple, a message in NDJSON-LD MUST be one of the following:
+
+1. A **context message**: a JSON object with exactly one key, `@context`.
+2. An **empty message**: the empty JSON object (`{}`).
+3. A **data message**: any other JSON object that can be interpreted as RDF, optionally using the most recently seen context message. A data message MAY include its own `@context`.
+
+Parsers MUST process NDJSON-LD as follows:
+
+1. Maintain a variable `C` (the active context), initially unset.
+2. For each parsed line `L`, where `L` is a JSON object:
+  1. If `L` is `{}` (an empty message), emit one empty [=RDF Message=]. The value of `C` is unchanged.
+  2. Else if `L` has exactly one key `@context` (a context message), set `C = L["@context"]`.
+  3. Else (a data message):
+    1. Create an effective JSON-LD document `D` from `L` as follows:
+      1. If `C` is unset, set `D = L`.
+      2. If `C` is set, set `D = {"@context": C, "@graph": L}`.
+    2. Expand and convert `D` to RDF, and emit the resulting [=RDF Message=].
+
+Context messages may appear anywhere in the stream and overwrite the previously active context. This allows context changes over time while keeping data messages compact.
+
+Note: When a data message includes `@context`, it is treated as part of the message data and wrapped as `{"@context": C, "@graph": L}`, where the message's local `@context` is processed as part of the graph relative to the envelope context `C`. The local `@context` in the message does not change `C` for subsequent messages.
 
 Issue: What should be the content type for this format? RDF4J currently uses `application/x-ld+ndjson` – [see the pull request](https://github.com/eclipse-rdf4j/rdf4j/pull/2845).
 
 <figure>
 <div class="example" highlight="json">
 ```json
-{"@context": "https://schema.org/", "@type": "Product", "name": "Hairdryer DRY 2000", "color": "red"}
-{"@context": "https://schema.org/", "@type": "Product", "name": "27-inch 4K Monitor 2700P", "color": "black"}
+{"@context": "https://schema.org/"}
+{"@type": "Product", "name": "Hairdryer DRY 2000", "color": "red"}
+{}
+{"@type": "Product", "name": "27-inch 4K Monitor 2700P", "color": "black"}
+{"@context": "https://example.org/other-vocab/"}
+{"@type": "OtherType", "name": "Switched context"}
 ```
 </div>
-<figcaption>Example of an [=RDF Message Log=] in the NDJSON-LD serialization format.</figcaption>
+<figcaption>Example of an [=RDF Message Log=] in the NDJSON-LD serialization format with a context message, an empty message, and data messages interpreted using the active context.</figcaption>
 </figure>
 
 ## YAML-LD ## {#yaml-ld}
