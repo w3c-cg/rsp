@@ -586,10 +586,11 @@ ic:measurement_R5_56__co2__0
 <figcaption>Example of an RDF Message in the officegraph dataset.</figcaption>
 </figure>
 
-To distribute this stream, a TAR archive is used, where each file in the archive is an RDF Message in the stream.
-This could be greatly improved by using an [=RDF Message Log=] serialization instead, as this would allow to save the entire stream into a single file, while still being able to reconstruct the individual messages again.
+To distribute this stream, TAR archives had previously been used, where each file in the archive had been an RDF Message in the stream.
+This was greatly improved by using an [=RDF Message Log=] serialization instead, as this allowed to save the entire stream into a single file, while still being able to reconstruct the individual messages again.
+Currently, [all datasets in RiverBench](https://w3id.org/riverbench/v/dev/datasets) are distributed as RDF Message Logs in the N-Triples/N-Quads formats (the "flat" distributions).
 
-As an alternative, [Jelly-RDF](https://w3id.org/jelly) distributions are also available, where the entire stream is serialized as a single `.jelly` file. In the file, one [Jelly frame](https://w3id.org/jelly/dev/user-guide/#stream-frames) corresponds to one RDF dataset. Under this specification, this would be a valid [=RDF Message Log=] serialization.
+As an alternative, [Jelly-RDF](https://w3id.org/jelly) distributions are also available, where the entire stream is serialized as a single `.jelly` file. In the file, one [Jelly frame](https://w3id.org/jelly/dev/user-guide/#stream-frames) corresponds to one RDF dataset. This is also a valid [=RDF Message Log=] serialization.
 
 ## Nanopublications ## {#nanopublications}
 
