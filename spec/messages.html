@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version d113b2e81, updated Tue Jun 9 14:57:55 2026 -0700" name="generator">
   <link href="https://w3c-cg.github.io/rsp/spec/messages" rel="canonical">
-  <meta content="bf0b11ad8b64ce05e582bf5e4b5dab6c0724f115" name="revision">
+  <meta content="da7592c24320716579fae7a2600d751bc69a3513" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 table { border-collapse: collapse }
@@ -2368,9 +2368,9 @@ An HTTP server exposes a file at <code>https://example.org/stream</code>. This f
 
     <p>In this example, the server is the <strong>stream producer</strong>, and the client is the <strong>stream consumer</strong>. The stream protocol is HTTP. The RDF Message Stream only exists over the course of the HTTP request.</p>
    </div>
-   <div class="example" id="example-9fcf93ff">
-    <a class="self-link" href="#example-9fcf93ff"></a>
-An MQTT broker (<a data-link-type="biblio" href="#biblio-mqtt-5" title="MQTT Version 5.0">[mqtt-5]</a>) hosts a topic <code>iot/temparature</code> to which RDF Messages are published by an IoT thermometer. Multiple clients, at different points in time, subscribe to that topic to consume the RDF Messages being published. Because of the used Quality-of-Service settings (QoS 0), some messages maybe be lost or reordered, resulting in different clients seeing different subsets of the messages published on the topic.
+   <div class="example" id="example-b9ac2f07">
+    <a class="self-link" href="#example-b9ac2f07"></a>
+An MQTT broker (<a data-link-type="biblio" href="#biblio-mqtt-5" title="MQTT Version 5.0">[mqtt-5]</a>) hosts a topic <code>iot/temperature</code> to which RDF Messages are published by an IoT thermometer. Multiple clients, at different points in time, subscribe to that topic to consume the RDF Messages being published. Because of the used Quality-of-Service settings (QoS 0), some messages maybe be lost or reordered, resulting in different clients seeing different subsets of the messages published on the topic.
 
 
     <p>In this example:</p>
@@ -2609,7 +2609,7 @@ This way, a <a data-link-type="dfn" href="#rdf-message-stream-consumer" id="ref-
    <p>We propose to extend the existing N-Triples, N-Quads, Turtle, and TriG formats to support RDF Messages. These extended formats are NOT backwards-compatible with existing parsers, as they require support for the new <a href="#message-delimiters">§ 2.1.2 Message delimiters</a> syntax.</p>
    <h4 class="heading settled" data-level="2.1.1" id="version-announcement"><span class="secno">2.1.1. </span><span class="content">Version announcement</span><a class="self-link" href="#version-announcement"></a></h4>
    <p>Concrete RDF syntaxes (e.g., <a data-link-type="biblio" href="#biblio-rdf12-turtle" title="RDF 1.2 Turtle">[rdf12-turtle]</a>) are being revised in RDF 1.2 to support in-line version announcements. This allows for communicating to the parser which features of the syntax are used in the file.</p>
-   <p>We extend this mechanism by adding three new version labels for RDF syntaxes that support RDF Messages (see <a href="#version-labels">§ 1.7 Version labels</a>). If a parser encounters a version label with the "-messages" suffix, it should expect the file to <code>MESSAGE</code> directives. Therefore, if the parser does not support RDF Messages, it should reject the file as invalid.</p>
+   <p>We extend this mechanism by adding three new version labels for RDF syntaxes that support RDF Messages (see <a href="#version-labels">§ 1.7 Version labels</a>). If a parser encounters a version label with the "-messages" suffix, it should expect the file to contain <code>MESSAGE</code> directives. Therefore, if the parser does not support RDF Messages, it should reject the file as invalid.</p>
    <p>In N-Triples (<a data-link-type="biblio" href="#biblio-rdf12-n-triples" title="RDF 1.2 N-Triples">[rdf12-n-triples]</a>) and N-Quads (<a data-link-type="biblio" href="#biblio-rdf12-n-quads" title="RDF 1.2 N-Quads">[rdf12-n-quads]</a>), the version announcement has one legal form (<code>VERSION</code>):</p>
    <div class="example" id="example-d96504e1">
     <a class="self-link" href="#example-d96504e1"></a>
@@ -2656,6 +2656,7 @@ This way, a <a data-link-type="dfn" href="#rdf-message-stream-consumer" id="ref-
 <pre class="highlight language-ebnf"><c- k>directive        </c->::<c- o>=</c-> <c- k>versionDirective </c-><c- p>|</c-> <c- k>messageDirective</c->
 <c- k>messageDirective </c->::= <c- t>'MESSAGE'</c->
 </pre>
+   <p><code>messageDirective</code> is a message delimiter.</p>
    <p>For example, this is an N-Triples file with two messages:</p>
    <div class="example" id="example-9f13e0f6">
     <a class="self-link" href="#example-9f13e0f6"></a>
@@ -2684,6 +2685,17 @@ MESSAGE
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- g>&lt;http://example.org/message_1></c-> <c- g>&lt;http://example.org/hasValue></c-> <c- s>"Hello, world!"</c-> <c- p>.</c->
 MESSAGE
+</pre>
+   </div>
+   <p>Finally, this is a file with one message with one triple, followed by two empty messages:</p>
+   <div class="example" id="example-b85d55bf">
+    <a class="self-link" href="#example-b85d55bf"></a>
+
+<pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
+<c- g>&lt;http://example.org/message_1></c-> <c- g>&lt;http://example.org/hasValue></c-> <c- s>"Hello, world!"</c-> <c- p>.</c->
+MESSAGE
+MESSAGE
+MESSAGE <c- c># last delimiter ignored, as it is not followed by statements or delimiters</c->
 </pre>
    </div>
    <p>For Turtle and TriG, the <code>directive</code> grammar production is extended as follows:</p>
