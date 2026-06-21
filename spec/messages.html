@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version d113b2e81, updated Tue Jun 9 14:57:55 2026 -0700" name="generator">
   <link href="https://w3c-cg.github.io/rsp/spec/messages" rel="canonical">
-  <meta content="255c9913faf58cd8a54e1c9c3e79c9b1309a2151" name="revision">
+  <meta content="bf0b11ad8b64ce05e582bf5e4b5dab6c0724f115" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 table { border-collapse: collapse }
@@ -2208,7 +2208,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">RDF Messages</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-06-20">20 June 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-06-21">21 June 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2225,7 +2225,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 20 June 2026,
+In addition, as of 21 June 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2888,9 +2888,10 @@ For example, the <a href="https://w3id.org/riverbench/datasets/officegraph/dev">
     </div>
     <figcaption>Example of an RDF Message in the officegraph dataset.</figcaption>
    </figure>
-   <p>To distribute this stream, a TAR archive is used, where each file in the archive is an RDF Message in the stream.
-This could be greatly improved by using an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log⑨">RDF Message Log</a> serialization instead, as this would allow to save the entire stream into a single file, while still being able to reconstruct the individual messages again.</p>
-   <p>As an alternative, <a href="https://w3id.org/jelly">Jelly-RDF</a> distributions are also available, where the entire stream is serialized as a single <code>.jelly</code> file. In the file, one <a href="https://w3id.org/jelly/dev/user-guide/#stream-frames">Jelly frame</a> corresponds to one RDF dataset. Under this specification, this would be a valid <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log①⓪">RDF Message Log</a> serialization.</p>
+   <p>To distribute this stream, TAR archives had previously been used, where each file in the archive had been an RDF Message in the stream.
+This was greatly improved by using an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log⑨">RDF Message Log</a> serialization instead, as this allowed to save the entire stream into a single file, while still being able to reconstruct the individual messages again.
+Currently, <a href="https://w3id.org/riverbench/v/dev/datasets">all datasets in RiverBench</a> are distributed as RDF Message Logs in the N-Triples/N-Quads formats (the "flat" distributions).</p>
+   <p>As an alternative, <a href="https://w3id.org/jelly">Jelly-RDF</a> distributions are also available, where the entire stream is serialized as a single <code>.jelly</code> file. In the file, one <a href="https://w3id.org/jelly/dev/user-guide/#stream-frames">Jelly frame</a> corresponds to one RDF dataset. This is also a valid <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log①⓪">RDF Message Log</a> serialization.</p>
    <h3 class="heading settled" data-level="4.4" id="nanopublications"><span class="secno">4.4. </span><span class="content">Nanopublications</span><a class="self-link" href="#nanopublications"></a></h3>
    <p>A <a href="https://nanopub.net/">Nanopublication</a> is a small RDF dataset that contains an assertion, its provenance, and publication information. Nanopublications are stored and exchanged by a network of services (registries and query endpoints). Exchanging each Nanopublication individually leads to significant overhead, due to repeated HTTP requests necessitated by the lack of a format for grouping multiple Nanopublications together. This issue was resolved by using <a href="https://w3id.org/jelly/">Jelly</a> to serialize multiple Nanopublications into a single byte stream, where each Nanopublication corresponds to a <a href="https://w3id.org/jelly/dev/user-guide/#stream-frames">Jelly frame</a>.</p>
    <p>Using an <a data-link-type="dfn" href="#rdf-message-log" id="ref-for-rdf-message-log①①">RDF Message Log</a> serialization to group multiple Nanopublications into a single file would also solve this problem, while still allowing each Nanopublication to be processed individually as an <a data-link-type="dfn" href="#rdf-message" id="ref-for-rdf-message②⑨">RDF Message</a>.</p>
