@@ -3,6 +3,7 @@ Title: RDF Messages
 Shortname: RDF-M
 Level: 1
 Status: LD
+Default Biblio Status: snapshot
 Markup Shorthands: markdown yes
 URL: https://w3c-cg.github.io/rsp/spec/messages
 Editor: Pieter Colpaert, https://pietercolpaert.be
