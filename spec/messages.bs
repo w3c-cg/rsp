@@ -302,7 +302,7 @@ ex:Observation2
 
 Issue: Can we provide an example of an RDF Message Log that does not use any of the formats that we define in the next section, to illustrate the concept of an RDF Message Log without relying on the syntax of a specific format?
 
-Note: A producer may want to indicate that a certain property is used to indicate the timestamp of when the message was created. This can be done, for example, using `ldes:timestampPath` from [Linked Data Event Streams](https://w3id.org/ldes/specification). Alternatively, when vocabularies such as ActivityStreams, SSN/SOSA, or PROV-O are used, one can just assume the respective properties `as:published`, `sosa:resultTime`, or `prov:generatedAtTime` are going to be used for this purpose.
+Note: A producer may want to indicate that a certain property is used to indicate the timestamp of when the message was created. This can be done, for example, using `ldes:timestampPath` from [Linked Data Event Streams](https://w3id.org/ldes/specification). Alternatively, when vocabularies such as Activity Streams, SSN/SOSA, or PROV-O are used, one can just assume the respective properties `as:published`, `sosa:resultTime`, or `prov:generatedAtTime` are going to be used for this purpose. [[#rdf-message-stream-profiles]] define how to find the timestamp property in a given RDF Message, its syntax, and its semantics.
 
 Blank node identifiers in RDF Message Streams and RDF Message Logs are scoped to the message they occur in. This allows for processing very long streams without having to worry about blank node identifier collisions or memory exhaustion. In case messages need to be linked together, it is recommended to use IRIs or skolemization.
 
@@ -395,6 +395,20 @@ GET /message-log.trig HTTP/1.1
 Host: example.org
 Accept: application/trig; version=1.1-messages
 ```
+</div>
+
+## RDF Message Stream Profiles ## {#rdf-message-stream-profiles}
+
+An <dfn>RDF Message Stream Profile</dfn> is a specification of how consumers and producers should interact with a particular subset of [=RDF Message Streams=]. A profile may define, for example, the expected semantics of the messages in the stream, shape of the contents (e.g., using SHACL), the ordering of messages, and the manner in which timestamps are provided in the messages.
+
+Note: We intentionally keep this definition open, so that it fits existing efforts (e.g., Activity Streams or Linked Data Event Streams) and allows for future profiles to be defined flexibly.
+
+<div class="example">
+Activity Streams [[!activitystreams-core]] is an RDF Message Stream Profile. It defines: the shape of messages in the stream (a specific vocabulary), the semantics of the messages, ordering, and a specific syntax for timestamps.
+</div>
+
+<div class="example">
+[Linked Data Event Streams](https://w3id.org/ldes/specification) is an RDF Message Stream Profile. It defines a generic method of sharing metadata about the stream, including: the shape of messages in the stream (SHACL), timestamp property, ordering, and retention policies.
 </div>
 
 
@@ -674,12 +688,6 @@ Issue: Is there a different industry-standard way to serialize multiple RDF/XML 
 Efficient interchange of [=RDF Message Logs=] may also be done using binary RDF serializations, such as [Jelly](https://w3id.org/jelly/), which already has built-in support for grouping quads into messages. We propose that Jelly and similar formats use the definitions from this specification to define the semantics of RDF Messages.
 
 In Jelly, each RdfStreamFrame is an [=RDF Message=].
-
-# RDF Message Stream Profiles # {#rdf-message-stream-profiles}
-
-Issue: Write down the section on profiles. Tracked as <w3c-cg/rsp#1>.
-
-An <dfn>RDF Message Stream Profile</dfn> is a ... (TODO)
 
 # Examples and use cases # {#examples}
 
