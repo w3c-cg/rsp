@@ -626,13 +626,9 @@ Issue: What should be the content type for this format? RDF4J currently uses `ap
 
 ## YAML-LD ## {#yaml-ld}
 
-Issue: Tracked as <w3c-cg/rsp#4>. The format proposed here is incompatible with the [YAML-LD Final Community Group Report](https://www.w3.org/community/reports/json-ld/CG-FINAL-yaml-ld-20231206/), which proposes to instead transform YAML streams into a top-level array in a JSON-LD document. The discussion on this topic is still on-going and must be resolved in collaboration with the newly-rechartered JSON-LD WG.
+The YAML-LD format [[!yaml-ld-10]] (currently a draft in the JSON-LD WG) already includes a feature called [*YAML-LD Streams*](https://www.w3.org/TR/yaml-ld-10/#streams), which allows multiple YAML documents to be concatenated together, with each document being separated typically by a line containing three dashes (`---`).
 
-The [[!YAML]] format includes built-in support for *YAML streams*, where multiple YAML documents are concatenated together, with each document being separated typically by a line containing three dashes (`---`). We propose to use that mechanism to serialize [=RDF Message Logs=], where each YAML document corresponds to an [=RDF Message=].
-
-This is made discoverable with a new content-type: `Content-Type: application/rdfm+yaml`
-
-Issue: Is this the correct content type?
+A YAML-LD Stream is a valid RDF Message Log, where each YAML document corresponds to an RDF Message. Please refer to [[!yaml-ld-10]] for the details on syntax, content types, and discoverability.
 
 <figure>
 <div class="example" highlight="yaml">
