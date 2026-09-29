@@ -653,11 +653,15 @@ color: black
 
 ## RDF/XML ## {#rdf-xml}
 
-An XML document containing an [=RDF Message Log=] has as its root the `<rdfm:MessageLog>` element, which contains zero or more `<rdf:RDF>` elements, each representing an [=RDF Message=].
-
-The `<rdfm:MessageLog>` may include XML namespace declarations. The nested `<rdf:RDF>` elements may also include XML namespace declarations. XML parsers will inherit namespace declarations from the `<rdfm:MessageLog>` element, unless overridden by a nested declaration.
+An [=RDF Message Log=] in RDF/XML is a single XML document that wraps the messages in an outer element. This format is NOT backwards-compatible with existing RDF/XML parsers. An RDF/XML parser without support for RDF Messages is expected to reject such a document, because `rdf:RDF` is not allowed as a property element name [[!rdf12-xml]].
 
 The `rdfm` XML namespace prefix in this specification refers to the namespace `https://w3c-cg.github.io/rsp/spec/messages#`.
+
+The root element of an XML document containing an [=RDF Message Log=] MUST be the `<rdfm:MessageLog>` element. The children of `<rdfm:MessageLog>` MUST be zero or more `<rdf:RDF>` elements, each representing one [=RDF Message=]. Each `<rdf:RDF>` element is parsed as an RDF/XML document element, as defined in [[!rdf12-xml]]. An empty `<rdf:RDF/>` element represents an empty [=RDF Message=].
+
+Other than `<rdf:RDF>` elements, `<rdfm:MessageLog>` MAY contain whitespace, XML comments, and processing instructions, which parsers MUST ignore. `<rdfm:MessageLog>` MUST NOT contain any other elements or non-whitespace text. In particular, node elements (such as `<rdf:Description>`) MUST NOT appear directly inside `<rdfm:MessageLog>`, even though [[!rdf12-xml]] allows omitting the `<rdf:RDF>` element in standalone documents.
+
+This is made discoverable with a new content-type: `Content-Type: application/x-rdfm+xml`
 
 <figure>
 <div class="example" highlight="xml">
@@ -684,7 +688,19 @@ The `rdfm` XML namespace prefix in this specification refers to the namespace `h
 <figcaption>Example of an [=RDF Message Log=] in the RDF/XML serialization format.</figcaption>
 </figure>
 
-Note: RDF Message Logs in RDF/XML are expected be read by streaming XML parsers, which can process the `<rdf:RDF>` elements one at a time without having to load the entire document into memory. Examples of such streaming XML parsers include Java StAX.
+Note: RDF Message Logs in RDF/XML are expected to be read by streaming XML parsers, which can process the `<rdf:RDF>` elements one at a time without having to load the entire document into memory. Examples of such streaming XML parsers include Java StAX.
+
+### Blank nodes ### {#rdf-xml-blank-nodes}
+
+In standalone RDF/XML documents, blank node identifiers (`rdf:nodeID`) are scoped to the entire XML document [[!rdf12-xml]]. In an RDF/XML [=RDF Message Log=], blank node identifiers MUST instead be scoped to the `<rdf:RDF>` element they occur in, in line with [[#rdf-message-logs]]. The same `rdf:nodeID` value used in two different `<rdf:RDF>` elements refers to two different blank nodes.
+
+### Inherited XML attributes and namespaces ### {#rdf-xml-inheritance}
+
+The `<rdfm:MessageLog>` element MAY include XML namespace declarations, as well as the `xml:base` and `xml:lang` attributes. Following the rules of XML [[!XML-NAMES]] [[!XMLBASE]], these apply to all nested `<rdf:RDF>` elements. Each `<rdf:RDF>` element MAY override them with its own declarations, which then apply only to that message.
+
+This allows producers to declare commonly used namespaces once for the whole log, while still making it possible to concatenate existing RDF/XML documents into a log by wrapping them in `<rdfm:MessageLog>`.
+
+The [=RDF Message Log=] version MAY be announced with the `rdf:version` attribute [[!rdf12-xml]] on the `<rdfm:MessageLog>` element, in which case it applies to all messages in the log. See [[#version-labels]].
 
 ## Other formats ## {#other-formats}
 
