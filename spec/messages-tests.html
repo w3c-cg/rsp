@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://w3c-cg.github.io/rsp/spec/messages-tests" rel="canonical">
-  <meta content="712de11b66d3413ab45e4b3807f26c2588110e87" name="revision">
+  <meta content="4a4a2c5454f24c9b81846bbef9fb4fcd7542102e" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2083,65 +2083,54 @@ Parts of this work may be from another specification document.  If so, those par
      <a href="#rdf-messages-interoperability-tests"><span class="secno">1</span> <span class="content">RDF Messages Interoperability Tests</span></a>
      <ol class="toc">
       <li>
-       <a href="#message-stream-discovery-tests"><span class="secno">1.1</span> <span class="content">Message Stream Discovery Tests</span></a>
+       <a href="#parsing-tests-turtle-trig-n-triples-n-quads"><span class="secno">1.1</span> <span class="content">Parsing Tests for Turtle, TriG, N-Triples, and N-Quads</span></a>
        <ol class="toc">
-        <li><a href="#sse-json-ld-context-link"><span class="secno">1.1.1</span> <span class="content">Server-Sent Events With JSON-LD Context Link</span></a>
-        <li><a href="#websocket-subprotocol-negotiation"><span class="secno">1.1.2</span> <span class="content">WebSocket Subprotocol Negotiation</span></a>
-        <li><a href="#kafka-records"><span class="secno">1.1.3</span> <span class="content">Kafka Records</span></a>
-        <li><a href="#mqtt-5-publish-packets"><span class="secno">1.1.4</span> <span class="content">MQTT 5 Publish Packets</span></a>
-        <li><a href="#other-broker-messages"><span class="secno">1.1.5</span> <span class="content">Other Broker Messages</span></a>
-        <li><a href="#jelly-grpc-frames"><span class="secno">1.1.6</span> <span class="content">Jelly gRPC Frames</span></a>
-        <li><a href="#sse-rejects-direct-binary-rdf-payloads"><span class="secno">1.1.7</span> <span class="content">SSE Rejects Direct Binary RDF Payloads</span></a>
+        <li><a href="#single-message-without-delimiter"><span class="secno">1.1.1</span> <span class="content">Single Message Without Delimiter</span></a>
+        <li><a href="#two-messages-with-message"><span class="secno">1.1.2</span> <span class="content">Two Messages With <code>MESSAGE</code></span></a>
+        <li><a href="#two-messages-with-at-message"><span class="secno">1.1.3</span> <span class="content">Two Messages With <code>@message .</code></span></a>
+        <li><a href="#empty-first-message"><span class="secno">1.1.4</span> <span class="content">Empty First Message</span></a>
+        <li><a href="#empty-message-between-non-empty-messages"><span class="secno">1.1.5</span> <span class="content">Empty Message Between Non-Empty Messages</span></a>
+        <li><a href="#final-delimiter-does-not-create-extra-empty-message"><span class="secno">1.1.6</span> <span class="content">Final Delimiter Does Not Create Extra Empty Message</span></a>
+        <li><a href="#n-quads-messages-preserve-graph-names"><span class="secno">1.1.7</span> <span class="content">N-Quads Messages Preserve Graph Names</span></a>
+        <li><a href="#message-with-default-graph-and-named-graph-quads"><span class="secno">1.1.8</span> <span class="content">Message With Default Graph And Named Graph Quads</span></a>
+        <li><a href="#blank-node-labels-are-scoped-per-message"><span class="secno">1.1.9</span> <span class="content">Blank Node Labels Are Scoped Per Message</span></a>
+        <li><a href="#repeated-prefixes-across-messages"><span class="secno">1.1.10</span> <span class="content">Repeated Prefixes Across Messages</span></a>
+        <li><a href="#message-boundary-after-a-graph-block"><span class="secno">1.1.11</span> <span class="content">Message Boundary After A Graph Block</span></a>
        </ol>
       <li>
-       <a href="#parsing-tests-turtle-trig-n-triples-n-quads"><span class="secno">1.2</span> <span class="content">Parsing Tests for Turtle, TriG, N-Triples, and N-Quads</span></a>
+       <a href="#parsing-tests-json-ld-message-logs"><span class="secno">1.2</span> <span class="content">Parsing Tests for NDJSON-LD</span></a>
        <ol class="toc">
-        <li><a href="#single-message-without-delimiter"><span class="secno">1.2.1</span> <span class="content">Single Message Without Delimiter</span></a>
-        <li><a href="#two-messages-with-message"><span class="secno">1.2.2</span> <span class="content">Two Messages With <code>MESSAGE</code></span></a>
-        <li><a href="#two-messages-with-at-message"><span class="secno">1.2.3</span> <span class="content">Two Messages With <code>@message .</code></span></a>
-        <li><a href="#empty-first-message"><span class="secno">1.2.4</span> <span class="content">Empty First Message</span></a>
-        <li><a href="#empty-message-between-non-empty-messages"><span class="secno">1.2.5</span> <span class="content">Empty Message Between Non-Empty Messages</span></a>
-        <li><a href="#final-delimiter-does-not-create-extra-empty-message"><span class="secno">1.2.6</span> <span class="content">Final Delimiter Does Not Create Extra Empty Message</span></a>
-        <li><a href="#n-quads-messages-preserve-graph-names"><span class="secno">1.2.7</span> <span class="content">N-Quads Messages Preserve Graph Names</span></a>
-        <li><a href="#message-with-default-graph-and-named-graph-quads"><span class="secno">1.2.8</span> <span class="content">Message With Default Graph And Named Graph Quads</span></a>
-        <li><a href="#blank-node-labels-are-scoped-per-message"><span class="secno">1.2.9</span> <span class="content">Blank Node Labels Are Scoped Per Message</span></a>
-        <li><a href="#repeated-prefixes-across-messages"><span class="secno">1.2.10</span> <span class="content">Repeated Prefixes Across Messages</span></a>
-        <li><a href="#message-boundary-after-a-graph-block"><span class="secno">1.2.11</span> <span class="content">Message Boundary After A Graph Block</span></a>
+        <li><a href="#context-message-followed-by-data-message"><span class="secno">1.2.1</span> <span class="content">Context Message Followed By Data Message</span></a>
+        <li><a href="#empty-message-does-not-change-active-context"><span class="secno">1.2.2</span> <span class="content">Empty Message Does Not Change Active Context</span></a>
+        <li><a href="#context-switch-applies-to-subsequent-data-messages"><span class="secno">1.2.3</span> <span class="content">Context Switch Applies To Subsequent Data Messages</span></a>
+        <li><a href="#data-message-context-is-combined-with-active-context"><span class="secno">1.2.4</span> <span class="content">Data Message With Local <code>@context</code> Is Wrapped With Active Context</span></a>
+        <li><a href="#data-message-without-prior-context-is-allowed"><span class="secno">1.2.5</span> <span class="content">Data Message Without Prior Context Is Allowed</span></a>
        </ol>
       <li>
-       <a href="#parsing-tests-json-ld-message-logs"><span class="secno">1.3</span> <span class="content">Parsing Tests for NDJSON-LD</span></a>
+       <a href="#parsing-tests-rdf-xml"><span class="secno">1.3</span> <span class="content">Parsing Tests for RDF/XML</span></a>
        <ol class="toc">
-        <li><a href="#context-message-followed-by-data-message"><span class="secno">1.3.1</span> <span class="content">Context Message Followed By Data Message</span></a>
-        <li><a href="#empty-message-does-not-change-active-context"><span class="secno">1.3.2</span> <span class="content">Empty Message Does Not Change Active Context</span></a>
-        <li><a href="#context-switch-applies-to-subsequent-data-messages"><span class="secno">1.3.3</span> <span class="content">Context Switch Applies To Subsequent Data Messages</span></a>
-        <li><a href="#data-message-context-is-combined-with-active-context"><span class="secno">1.3.4</span> <span class="content">Data Message With Local <code>@context</code> Is Wrapped With Active Context</span></a>
-        <li><a href="#data-message-without-prior-context-is-allowed"><span class="secno">1.3.5</span> <span class="content">Data Message Without Prior Context Is Allowed</span></a>
+        <li><a href="#rdf-xml-two-messages"><span class="secno">1.3.1</span> <span class="content">Two Messages</span></a>
+        <li><a href="#rdf-xml-empty-log"><span class="secno">1.3.2</span> <span class="content">Empty Log</span></a>
+        <li><a href="#rdf-xml-empty-message"><span class="secno">1.3.3</span> <span class="content">Empty Message Between Non-Empty Messages</span></a>
+        <li><a href="#rdf-xml-blank-nodes-scoped-per-message"><span class="secno">1.3.4</span> <span class="content">Blank Node Identifiers Are Scoped Per Message</span></a>
+        <li><a href="#rdf-xml-blank-node-reused-within-message"><span class="secno">1.3.5</span> <span class="content">Blank Node Identifier Reused Within One Message</span></a>
+        <li><a href="#rdf-xml-namespaces-inherited"><span class="secno">1.3.6</span> <span class="content">Namespaces Declared On The Log Element</span></a>
+        <li><a href="#rdf-xml-base-inherited"><span class="secno">1.3.7</span> <span class="content">Base IRI Declared On The Log Element</span></a>
+        <li><a href="#rdf-xml-lang-inherited"><span class="secno">1.3.8</span> <span class="content">Language Tag Declared On The Log Element</span></a>
+        <li><a href="#rdf-xml-comments-between-messages"><span class="secno">1.3.9</span> <span class="content">Comments And Processing Instructions Between Messages Are Ignored</span></a>
+        <li><a href="#rdf-xml-multiline-literal"><span class="secno">1.3.10</span> <span class="content">Multiline Literal</span></a>
        </ol>
+      <li><a href="#serialization-tests-turtle-trig-n-triples-n-quads"><span class="secno">1.4</span> <span class="content">Serialization Tests for Turtle, TriG, N-Triples, and N-Quads</span></a>
       <li>
-       <a href="#parsing-tests-rdf-xml"><span class="secno">1.4</span> <span class="content">Parsing Tests for RDF/XML</span></a>
+       <a href="#error-tests"><span class="secno">1.5</span> <span class="content">Error Tests</span></a>
        <ol class="toc">
-        <li><a href="#rdf-xml-two-messages"><span class="secno">1.4.1</span> <span class="content">Two Messages</span></a>
-        <li><a href="#rdf-xml-empty-log"><span class="secno">1.4.2</span> <span class="content">Empty Log</span></a>
-        <li><a href="#rdf-xml-empty-message"><span class="secno">1.4.3</span> <span class="content">Empty Message Between Non-Empty Messages</span></a>
-        <li><a href="#rdf-xml-blank-nodes-scoped-per-message"><span class="secno">1.4.4</span> <span class="content">Blank Node Identifiers Are Scoped Per Message</span></a>
-        <li><a href="#rdf-xml-blank-node-reused-within-message"><span class="secno">1.4.5</span> <span class="content">Blank Node Identifier Reused Within One Message</span></a>
-        <li><a href="#rdf-xml-namespaces-inherited"><span class="secno">1.4.6</span> <span class="content">Namespaces Declared On The Log Element</span></a>
-        <li><a href="#rdf-xml-base-inherited"><span class="secno">1.4.7</span> <span class="content">Base IRI Declared On The Log Element</span></a>
-        <li><a href="#rdf-xml-lang-inherited"><span class="secno">1.4.8</span> <span class="content">Language Tag Declared On The Log Element</span></a>
-        <li><a href="#rdf-xml-comments-between-messages"><span class="secno">1.4.9</span> <span class="content">Comments And Processing Instructions Between Messages Are Ignored</span></a>
-        <li><a href="#rdf-xml-multiline-literal"><span class="secno">1.4.10</span> <span class="content">Multiline Literal</span></a>
-       </ol>
-      <li><a href="#serialization-tests-turtle-trig-n-triples-n-quads"><span class="secno">1.5</span> <span class="content">Serialization Tests for Turtle, TriG, N-Triples, and N-Quads</span></a>
-      <li>
-       <a href="#error-tests"><span class="secno">1.6</span> <span class="content">Error Tests</span></a>
-       <ol class="toc">
-        <li><a href="#message-delimiter-without-message-support"><span class="secno">1.6.1</span> <span class="content">Message Delimiter Without Message Support</span></a>
-        <li><a href="#at-message-without-trailing-dot"><span class="secno">1.6.2</span> <span class="content"><code>@message</code> Without Trailing Dot</span></a>
-        <li><a href="#message-delimiter-inside-an-open-graph-block"><span class="secno">1.6.3</span> <span class="content">Message Delimiter Inside An Open Graph Block</span></a>
-        <li><a href="#rdf-xml-wrong-root-element"><span class="secno">1.6.4</span> <span class="content">RDF/XML Root Element Is Not <code>rdfm:MessageLog</code></span></a>
-        <li><a href="#rdf-xml-node-element-in-log"><span class="secno">1.6.5</span> <span class="content">RDF/XML Node Element Directly Inside <code>rdfm:MessageLog</code></span></a>
-        <li><a href="#rdf-xml-text-between-messages"><span class="secno">1.6.6</span> <span class="content">RDF/XML Text Between Messages</span></a>
-        <li><a href="#rdf-xml-log-without-message-support"><span class="secno">1.6.7</span> <span class="content">RDF/XML Log Read By A Parser Without Message Support</span></a>
+        <li><a href="#message-delimiter-without-message-support"><span class="secno">1.5.1</span> <span class="content">Message Delimiter Without Message Support</span></a>
+        <li><a href="#at-message-without-trailing-dot"><span class="secno">1.5.2</span> <span class="content"><code>@message</code> Without Trailing Dot</span></a>
+        <li><a href="#message-delimiter-inside-an-open-graph-block"><span class="secno">1.5.3</span> <span class="content">Message Delimiter Inside An Open Graph Block</span></a>
+        <li><a href="#rdf-xml-wrong-root-element"><span class="secno">1.5.4</span> <span class="content">RDF/XML Root Element Is Not <code>rdfm:MessageLog</code></span></a>
+        <li><a href="#rdf-xml-node-element-in-log"><span class="secno">1.5.5</span> <span class="content">RDF/XML Node Element Directly Inside <code>rdfm:MessageLog</code></span></a>
+        <li><a href="#rdf-xml-text-between-messages"><span class="secno">1.5.6</span> <span class="content">RDF/XML Text Between Messages</span></a>
+        <li><a href="#rdf-xml-log-without-message-support"><span class="secno">1.5.7</span> <span class="content">RDF/XML Log Read By A Parser Without Message Support</span></a>
        </ol>
      </ol>
     <li><a href="#conformance"><span class="secno"></span> <span class="content">
@@ -2162,133 +2151,8 @@ Parts of this work may be from another specification document.  If so, those par
    <p>Blank node identifiers in RDF Message Logs MUST be scoped to the message in which they occur. Therefore, if the same blank node label appears in two different messages in the same input stream, the parser MUST produce two distinct blank nodes. This requirement applies even when the entire RDF Message Log is parsed from one continuous input string or stream by one parser instance.</p>
    <p>Message delimiters are message-level syntax. They MUST only occur where the underlying RDF syntax permits directives or top-level statements, and MUST not occur inside an open graph block. A delimiter encountered inside a graph block MUST be a parse error.</p>
    <p>Serializers should produce RDF Message Logs that round-trip to the same message sequence and the same quads per message. Conformance tests should not require a serializer to choose a specific delimiter spelling when more than one delimiter spelling is supported by the target syntax.</p>
-   <h3 class="heading settled" data-level="1.1" id="message-stream-discovery-tests"><span class="secno">1.1. </span><span class="content">Message Stream Discovery Tests</span><a class="self-link" href="#message-stream-discovery-tests"></a></h3>
-   <p>These tests apply to adapters that expose protocol messages as RDF Messages.</p>
-   <h4 class="heading settled" data-level="1.1.1" id="sse-json-ld-context-link"><span class="secno">1.1.1. </span><span class="content">Server-Sent Events With JSON-LD Context Link</span><a class="self-link" href="#sse-json-ld-context-link"></a></h4>
-   <p>Stream metadata:</p>
-<pre class="highlight language-http">Content-Type: text/event-stream
-Link: &lt;https://example.org/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
-RDF-Message-Content-Type: application/ld+json
-</pre>
-   <p>The context document at <code>https://example.org/context.jsonld</code> is:</p>
-<pre class="highlight language-json"><c- p>{</c-><c- f>"@context"</c-><c- p>:{</c-><c- f>"ex"</c-><c- p>:</c-><c- u>"http://example.org/"</c-><c- p>,</c-><c- f>"p"</c-><c- p>:{</c-><c- f>"@id"</c-><c- p>:</c-><c- u>"http://example.org/p"</c-><c- p>,</c-><c- f>"@type"</c-><c- p>:</c-><c- u>"@id"</c-><c- p>}}}</c->
-</pre>
-   <p>Input events:</p>
-<pre class="highlight language-text">event: rdf-message
-data: {"@id":"ex:s1","p":"ex:o1"}
-
-event: rdf-message
-data: {"@id":"ex:s2","p":"ex:o2"}
-</pre>
-   <p>Expected messages:</p>
-<pre class="highlight language-text">Message 1:
-  &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
-
-Message 2:
-  &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
-</pre>
-   <h4 class="heading settled" data-level="1.1.2" id="websocket-subprotocol-negotiation"><span class="secno">1.1.2. </span><span class="content">WebSocket Subprotocol Negotiation</span><a class="self-link" href="#websocket-subprotocol-negotiation"></a></h4>
-   <p>Handshake request:</p>
-<pre class="highlight language-http">Sec-WebSocket-Protocol: rdfm.ld-json, rdfm.n-triples
-</pre>
-   <p>Handshake response:</p>
-<pre class="highlight language-http">Sec-WebSocket-Protocol: rdfm.n-triples
-</pre>
-   <p>Input frames:</p>
-<pre class="highlight language-text">Frame 1:
-  _:b0 &lt;http://example.org/p> &lt;http://example.org/o1> .
-
-Frame 2:
-  _:b0 &lt;http://example.org/p> &lt;http://example.org/o2> .
-</pre>
-   <p>Expected result:</p>
-<pre class="highlight language-text">Message 1 contains one triple whose subject is a blank node.
-Message 2 contains one triple whose subject is a blank node.
-The two blank nodes must not be the same RDF term.
-</pre>
-   <h4 class="heading settled" data-level="1.1.3" id="kafka-records"><span class="secno">1.1.3. </span><span class="content">Kafka Records</span><a class="self-link" href="#kafka-records"></a></h4>
-   <p>Record headers for both records:</p>
-<pre class="highlight language-text">RDF-Message-Content-Type: application/n-triples
-</pre>
-   <p>Input records:</p>
-<pre class="highlight language-text">Record 1:
-  &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
-
-Record 2:
-  &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
-</pre>
-   <p>Expected messages:</p>
-<pre class="highlight language-text">Message 1:
-  &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
-
-Message 2:
-  &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
-</pre>
-   <h4 class="heading settled" data-level="1.1.4" id="mqtt-5-publish-packets"><span class="secno">1.1.4. </span><span class="content">MQTT 5 Publish Packets</span><a class="self-link" href="#mqtt-5-publish-packets"></a></h4>
-   <p>PUBLISH properties for both packets:</p>
-<pre class="highlight language-text">Content Type: application/ld+json
-</pre>
-   <p>Input packets:</p>
-<pre class="highlight language-text">Packet 1 payload:
-  {"@id":"http://example.org/s1","http://example.org/p":{"@id":"http://example.org/o1"}}
-
-Packet 2 payload:
-  {"@id":"http://example.org/s2","http://example.org/p":{"@id":"http://example.org/o2"}}
-</pre>
-   <p>Expected messages:</p>
-<pre class="highlight language-text">Message 1:
-  &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
-
-Message 2:
-  &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
-</pre>
-   <h4 class="heading settled" data-level="1.1.5" id="other-broker-messages"><span class="secno">1.1.5. </span><span class="content">Other Broker Messages</span><a class="self-link" href="#other-broker-messages"></a></h4>
-   <p>Message headers for both broker messages:</p>
-<pre class="highlight language-text">RDF-Message-Content-Type: application/trig
-</pre>
-   <p>Input broker messages:</p>
-<pre class="highlight language-text">Message 1 body:
-  &lt;http://example.org/g1> {
-    &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
-  }
-
-Message 2 body:
-  &lt;http://example.org/g2> {
-    &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
-  }
-</pre>
-   <p>Expected messages:</p>
-<pre class="highlight language-text">Message 1:
-  &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> &lt;http://example.org/g1> .
-
-Message 2:
-  &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> &lt;http://example.org/g2> .
-</pre>
-   <h4 class="heading settled" data-level="1.1.6" id="jelly-grpc-frames"><span class="secno">1.1.6. </span><span class="content">Jelly gRPC Frames</span><a class="self-link" href="#jelly-grpc-frames"></a></h4>
-   <p>Input stream:</p>
-<pre class="highlight language-text">RdfStreamFrame 1:
-  RDF dataset containing &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
-
-RdfStreamFrame 2:
-  RDF dataset containing &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
-</pre>
-   <p>Expected messages:</p>
-<pre class="highlight language-text">Message 1:
-  &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
-
-Message 2:
-  &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
-</pre>
-   <h4 class="heading settled" data-level="1.1.7" id="sse-rejects-direct-binary-rdf-payloads"><span class="secno">1.1.7. </span><span class="content">SSE Rejects Direct Binary RDF Payloads</span><a class="self-link" href="#sse-rejects-direct-binary-rdf-payloads"></a></h4>
-   <p>Stream metadata:</p>
-<pre class="highlight language-http">Content-Type: text/event-stream
-RDF-Message-Content-Type: application/x-jelly-rdf
-</pre>
-   <p>Expected result:</p>
-<pre class="highlight language-text">The adapter must reject the stream metadata because binary RDF serializations must not be sent directly in SSE data fields.
-</pre>
-   <h3 class="heading settled" data-level="1.2" id="parsing-tests-turtle-trig-n-triples-n-quads"><span class="secno">1.2. </span><span class="content">Parsing Tests for Turtle, TriG, N-Triples, and N-Quads</span><a class="self-link" href="#parsing-tests-turtle-trig-n-triples-n-quads"></a></h3>
-   <h4 class="heading settled" data-level="1.2.1" id="single-message-without-delimiter"><span class="secno">1.2.1. </span><span class="content">Single Message Without Delimiter</span><a class="self-link" href="#single-message-without-delimiter"></a></h4>
+   <h3 class="heading settled" data-level="1.1" id="parsing-tests-turtle-trig-n-triples-n-quads"><span class="secno">1.1. </span><span class="content">Parsing Tests for Turtle, TriG, N-Triples, and N-Quads</span><a class="self-link" href="#parsing-tests-turtle-trig-n-triples-n-quads"></a></h3>
+   <h4 class="heading settled" data-level="1.1.1" id="single-message-without-delimiter"><span class="secno">1.1.1. </span><span class="content">Single Message Without Delimiter</span><a class="self-link" href="#single-message-without-delimiter"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- g>&lt;http://example.org/s1></c-> <c- g>&lt;http://example.org/p></c-> <c- g>&lt;http://example.org/o1></c-> <c- p>.</c->
@@ -2297,7 +2161,7 @@ RDF-Message-Content-Type: application/x-jelly-rdf
 <pre class="highlight language-text">Message 1:
   &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.2" id="two-messages-with-message"><span class="secno">1.2.2. </span><span class="content">Two Messages With <code>MESSAGE</code></span><a class="self-link" href="#two-messages-with-message"></a></h4>
+   <h4 class="heading settled" data-level="1.1.2" id="two-messages-with-message"><span class="secno">1.1.2. </span><span class="content">Two Messages With <code>MESSAGE</code></span><a class="self-link" href="#two-messages-with-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- g>&lt;http://example.org/s1></c-> <c- g>&lt;http://example.org/p></c-> <c- g>&lt;http://example.org/o1></c-> <c- p>.</c->
@@ -2311,7 +2175,7 @@ MESSAGE
 Message 2:
   &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.3" id="two-messages-with-at-message"><span class="secno">1.2.3. </span><span class="content">Two Messages With <code>@message .</code></span><a class="self-link" href="#two-messages-with-at-message"></a></h4>
+   <h4 class="heading settled" data-level="1.1.3" id="two-messages-with-at-message"><span class="secno">1.1.3. </span><span class="content">Two Messages With <code>@message .</code></span><a class="self-link" href="#two-messages-with-at-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">@version <c- s>"1.2-messages"</c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/></c-> <c- p>.</c->
@@ -2327,7 +2191,7 @@ Message 2:
 Message 2:
   &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.4" id="empty-first-message"><span class="secno">1.2.4. </span><span class="content">Empty First Message</span><a class="self-link" href="#empty-first-message"></a></h4>
+   <h4 class="heading settled" data-level="1.1.4" id="empty-first-message"><span class="secno">1.1.4. </span><span class="content">Empty First Message</span><a class="self-link" href="#empty-first-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 MESSAGE
@@ -2340,7 +2204,7 @@ MESSAGE
 Message 2:
   &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.5" id="empty-message-between-non-empty-messages"><span class="secno">1.2.5. </span><span class="content">Empty Message Between Non-Empty Messages</span><a class="self-link" href="#empty-message-between-non-empty-messages"></a></h4>
+   <h4 class="heading settled" data-level="1.1.5" id="empty-message-between-non-empty-messages"><span class="secno">1.1.5. </span><span class="content">Empty Message Between Non-Empty Messages</span><a class="self-link" href="#empty-message-between-non-empty-messages"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- g>&lt;http://example.org/s1></c-> <c- g>&lt;http://example.org/p></c-> <c- g>&lt;http://example.org/o1></c-> <c- p>.</c->
@@ -2358,7 +2222,7 @@ Message 2:
 Message 3:
   &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.6" id="final-delimiter-does-not-create-extra-empty-message"><span class="secno">1.2.6. </span><span class="content">Final Delimiter Does Not Create Extra Empty Message</span><a class="self-link" href="#final-delimiter-does-not-create-extra-empty-message"></a></h4>
+   <h4 class="heading settled" data-level="1.1.6" id="final-delimiter-does-not-create-extra-empty-message"><span class="secno">1.1.6. </span><span class="content">Final Delimiter Does Not Create Extra Empty Message</span><a class="self-link" href="#final-delimiter-does-not-create-extra-empty-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- g>&lt;http://example.org/s1></c-> <c- g>&lt;http://example.org/p></c-> <c- g>&lt;http://example.org/o1></c-> <c- p>.</c->
@@ -2368,7 +2232,7 @@ MESSAGE
 <pre class="highlight language-text">Message 1:
   &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.7" id="n-quads-messages-preserve-graph-names"><span class="secno">1.2.7. </span><span class="content">N-Quads Messages Preserve Graph Names</span><a class="self-link" href="#n-quads-messages-preserve-graph-names"></a></h4>
+   <h4 class="heading settled" data-level="1.1.7" id="n-quads-messages-preserve-graph-names"><span class="secno">1.1.7. </span><span class="content">N-Quads Messages Preserve Graph Names</span><a class="self-link" href="#n-quads-messages-preserve-graph-names"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-text">VERSION "1.2-messages"
 &lt;http://example.org/s1> &lt;http://example.org/p> &lt;http://example.org/o1> &lt;http://example.org/g1> .
@@ -2382,7 +2246,7 @@ MESSAGE
 Message 2:
   &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> &lt;http://example.org/g2> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.8" id="message-with-default-graph-and-named-graph-quads"><span class="secno">1.2.8. </span><span class="content">Message With Default Graph And Named Graph Quads</span><a class="self-link" href="#message-with-default-graph-and-named-graph-quads"></a></h4>
+   <h4 class="heading settled" data-level="1.1.8" id="message-with-default-graph-and-named-graph-quads"><span class="secno">1.1.8. </span><span class="content">Message With Default Graph And Named Graph Quads</span><a class="self-link" href="#message-with-default-graph-and-named-graph-quads"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- k>PREFIX</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/></c->
@@ -2404,7 +2268,7 @@ MESSAGE
 Message 2:
   &lt;http://example.org/s4> &lt;http://example.org/p> &lt;http://example.org/o4> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.9" id="blank-node-labels-are-scoped-per-message"><span class="secno">1.2.9. </span><span class="content">Blank Node Labels Are Scoped Per Message</span><a class="self-link" href="#blank-node-labels-are-scoped-per-message"></a></h4>
+   <h4 class="heading settled" data-level="1.1.9" id="blank-node-labels-are-scoped-per-message"><span class="secno">1.1.9. </span><span class="content">Blank Node Labels Are Scoped Per Message</span><a class="self-link" href="#blank-node-labels-are-scoped-per-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- nn>_</c-><c- p>:</c-><c- f>b0</c-> <c- g>&lt;http://example.org/p></c-> <c- g>&lt;http://example.org/o1></c-> <c- p>.</c->
@@ -2417,7 +2281,7 @@ Message 2 contains one quad whose subject is a blank node.
 The two blank nodes must not be the same RDF term.
 </pre>
    <p>This test must be performed on one continuous input string or stream, not by creating two independent parser instances.</p>
-   <h4 class="heading settled" data-level="1.2.10" id="repeated-prefixes-across-messages"><span class="secno">1.2.10. </span><span class="content">Repeated Prefixes Across Messages</span><a class="self-link" href="#repeated-prefixes-across-messages"></a></h4>
+   <h4 class="heading settled" data-level="1.1.10" id="repeated-prefixes-across-messages"><span class="secno">1.1.10. </span><span class="content">Repeated Prefixes Across Messages</span><a class="self-link" href="#repeated-prefixes-across-messages"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- k>PREFIX</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/one/></c->
@@ -2433,7 +2297,7 @@ MESSAGE
 Message 2:
   &lt;http://example.org/two/s> &lt;http://example.org/two/p> &lt;http://example.org/two/o> .
 </pre>
-   <h4 class="heading settled" data-level="1.2.11" id="message-boundary-after-a-graph-block"><span class="secno">1.2.11. </span><span class="content">Message Boundary After A Graph Block</span><a class="self-link" href="#message-boundary-after-a-graph-block"></a></h4>
+   <h4 class="heading settled" data-level="1.1.11" id="message-boundary-after-a-graph-block"><span class="secno">1.1.11. </span><span class="content">Message Boundary After A Graph Block</span><a class="self-link" href="#message-boundary-after-a-graph-block"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- g>&lt;http://example.org/g></c-> <c- p>{</c->
@@ -2449,9 +2313,9 @@ MESSAGE
 Message 2:
   &lt;http://example.org/d> &lt;http://example.org/e> &lt;http://example.org/f> .
 </pre>
-   <h3 class="heading settled" data-level="1.3" id="parsing-tests-json-ld-message-logs"><span class="secno">1.3. </span><span class="content">Parsing Tests for NDJSON-LD</span><a class="self-link" href="#parsing-tests-json-ld-message-logs"></a></h3>
+   <h3 class="heading settled" data-level="1.2" id="parsing-tests-json-ld-message-logs"><span class="secno">1.2. </span><span class="content">Parsing Tests for NDJSON-LD</span><a class="self-link" href="#parsing-tests-json-ld-message-logs"></a></h3>
    <p>In these tests, each input line is one JSON object. Context messages update parser state but do not emit RDF messages. A parser maintains an active context that is updated by context messages.</p>
-   <h4 class="heading settled" data-level="1.3.1" id="context-message-followed-by-data-message"><span class="secno">1.3.1. </span><span class="content">Context Message Followed By Data Message</span><a class="self-link" href="#context-message-followed-by-data-message"></a></h4>
+   <h4 class="heading settled" data-level="1.2.1" id="context-message-followed-by-data-message"><span class="secno">1.2.1. </span><span class="content">Context Message Followed By Data Message</span><a class="self-link" href="#context-message-followed-by-data-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-json"><c- p>{</c-><c- f>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>}</c->
 <c- p>{</c-><c- f>"@type"</c-><c- p>:</c-> <c- u>"Product"</c-><c- p>,</c-> <c- f>"name"</c-><c- p>:</c-> <c- u>"Hairdryer DRY 2000"</c-><c- p>,</c-> <c- f>"color"</c-><c- p>:</c-> <c- u>"red"</c-><c- p>}</c->
@@ -2460,7 +2324,7 @@ Message 2:
 <pre class="highlight language-text">Message 1:
   RDF dataset obtained by interpreting the second JSON object with @context = "https://schema.org/".
 </pre>
-   <h4 class="heading settled" data-level="1.3.2" id="empty-message-does-not-change-active-context"><span class="secno">1.3.2. </span><span class="content">Empty Message Does Not Change Active Context</span><a class="self-link" href="#empty-message-does-not-change-active-context"></a></h4>
+   <h4 class="heading settled" data-level="1.2.2" id="empty-message-does-not-change-active-context"><span class="secno">1.2.2. </span><span class="content">Empty Message Does Not Change Active Context</span><a class="self-link" href="#empty-message-does-not-change-active-context"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-json"><c- p>{</c-><c- f>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>}</c->
 <c- p>{}</c->
@@ -2473,7 +2337,7 @@ Message 2:
 Message 2:
   RDF dataset obtained by interpreting the third JSON object with @context = "https://schema.org/".
 </pre>
-   <h4 class="heading settled" data-level="1.3.3" id="context-switch-applies-to-subsequent-data-messages"><span class="secno">1.3.3. </span><span class="content">Context Switch Applies To Subsequent Data Messages</span><a class="self-link" href="#context-switch-applies-to-subsequent-data-messages"></a></h4>
+   <h4 class="heading settled" data-level="1.2.3" id="context-switch-applies-to-subsequent-data-messages"><span class="secno">1.2.3. </span><span class="content">Context Switch Applies To Subsequent Data Messages</span><a class="self-link" href="#context-switch-applies-to-subsequent-data-messages"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-json"><c- p>{</c-><c- f>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>}</c->
 <c- p>{</c-><c- f>"@type"</c-><c- p>:</c-> <c- u>"Product"</c-><c- p>,</c-> <c- f>"name"</c-><c- p>:</c-> <c- u>"Hairdryer DRY 2000"</c-><c- p>,</c-> <c- f>"color"</c-><c- p>:</c-> <c- u>"red"</c-><c- p>}</c->
@@ -2487,7 +2351,7 @@ Message 2:
 Message 2:
   RDF dataset obtained by interpreting the fourth JSON object with @context = "https://example.org/other-vocab/".
 </pre>
-   <h4 class="heading settled" data-level="1.3.4" id="data-message-context-is-combined-with-active-context"><span class="secno">1.3.4. </span><span class="content">Data Message With Local <code>@context</code> Is Wrapped With Active Context</span><a class="self-link" href="#data-message-context-is-combined-with-active-context"></a></h4>
+   <h4 class="heading settled" data-level="1.2.4" id="data-message-context-is-combined-with-active-context"><span class="secno">1.2.4. </span><span class="content">Data Message With Local <code>@context</code> Is Wrapped With Active Context</span><a class="self-link" href="#data-message-context-is-combined-with-active-context"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-json"><c- p>{</c-><c- f>"@context"</c-><c- p>:</c-> <c- p>{</c-><c- f>"ex"</c-><c- p>:</c-> <c- u>"https://example.org/base/"</c-><c- p>,</c-> <c- f>"name"</c-><c- p>:</c-> <c- u>"ex:baseName"</c-><c- p>}}</c->
 <c- p>{</c-><c- f>"@context"</c-><c- p>:</c-> <c- p>{</c-><c- f>"label"</c-><c- p>:</c-> <c- u>"ex:label"</c-><c- p>},</c-> <c- f>"@type"</c-><c- p>:</c-> <c- u>"ex:Thing"</c-><c- p>,</c-> <c- f>"name"</c-><c- p>:</c-> <c- u>"Alice"</c-><c- p>,</c-> <c- f>"label"</c-><c- p>:</c-> <c- u>"A"</c-><c- p>}</c->
@@ -2503,7 +2367,7 @@ Message 2:
   {"@context": {"ex": "https://example.org/base/", "name": "ex:baseName"}, "@graph": {"@type": "ex:Thing", "name": "Bob"}}
   The local @context from line 2 does not change the active context C for subsequent messages.
 </pre>
-   <h4 class="heading settled" data-level="1.3.5" id="data-message-without-prior-context-is-allowed"><span class="secno">1.3.5. </span><span class="content">Data Message Without Prior Context Is Allowed</span><a class="self-link" href="#data-message-without-prior-context-is-allowed"></a></h4>
+   <h4 class="heading settled" data-level="1.2.5" id="data-message-without-prior-context-is-allowed"><span class="secno">1.2.5. </span><span class="content">Data Message Without Prior Context Is Allowed</span><a class="self-link" href="#data-message-without-prior-context-is-allowed"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-json"><c- p>{</c-><c- f>"@id"</c-><c- p>:</c-> <c- u>"https://example.org/p1"</c-><c- p>,</c-> <c- f>"@type"</c-><c- p>:</c-> <c- u>"https://example.org/Product"</c-><c- p>}</c->
 </pre>
@@ -2511,9 +2375,9 @@ Message 2:
 <pre class="highlight language-text">Message 1:
   RDF dataset obtained by interpreting the JSON object as regular JSON-LD, without a stream-level active context.
 </pre>
-   <h3 class="heading settled" data-level="1.4" id="parsing-tests-rdf-xml"><span class="secno">1.4. </span><span class="content">Parsing Tests for RDF/XML</span><a class="self-link" href="#parsing-tests-rdf-xml"></a></h3>
+   <h3 class="heading settled" data-level="1.3" id="parsing-tests-rdf-xml"><span class="secno">1.3. </span><span class="content">Parsing Tests for RDF/XML</span><a class="self-link" href="#parsing-tests-rdf-xml"></a></h3>
    <p>These tests apply to parsers of RDF Message Logs in the RDF/XML serialization. In all tests, the <code>rdfm</code> prefix refers to <code>https://w3c-cg.github.io/rsp/spec/messages#</code>.</p>
-   <h4 class="heading settled" data-level="1.4.1" id="rdf-xml-two-messages"><span class="secno">1.4.1. </span><span class="content">Two Messages</span><a class="self-link" href="#rdf-xml-two-messages"></a></h4>
+   <h4 class="heading settled" data-level="1.3.1" id="rdf-xml-two-messages"><span class="secno">1.3.1. </span><span class="content">Two Messages</span><a class="self-link" href="#rdf-xml-two-messages"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-><c- f>></c->
@@ -2536,7 +2400,7 @@ Message 2:
 Message 2:
   &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
 </pre>
-   <h4 class="heading settled" data-level="1.4.2" id="rdf-xml-empty-log"><span class="secno">1.4.2. </span><span class="content">Empty Log</span><a class="self-link" href="#rdf-xml-empty-log"></a></h4>
+   <h4 class="heading settled" data-level="1.3.2" id="rdf-xml-empty-log"><span class="secno">1.3.2. </span><span class="content">Empty Log</span><a class="self-link" href="#rdf-xml-empty-log"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-><c- f>/></c->
@@ -2544,7 +2408,7 @@ Message 2:
    <p>Expected result:</p>
 <pre class="highlight language-text">No messages.
 </pre>
-   <h4 class="heading settled" data-level="1.4.3" id="rdf-xml-empty-message"><span class="secno">1.4.3. </span><span class="content">Empty Message Between Non-Empty Messages</span><a class="self-link" href="#rdf-xml-empty-message"></a></h4>
+   <h4 class="heading settled" data-level="1.3.3" id="rdf-xml-empty-message"><span class="secno">1.3.3. </span><span class="content">Empty Message Between Non-Empty Messages</span><a class="self-link" href="#rdf-xml-empty-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-><c- f>></c->
@@ -2571,7 +2435,7 @@ Message 2:
 Message 3:
   &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
 </pre>
-   <h4 class="heading settled" data-level="1.4.4" id="rdf-xml-blank-nodes-scoped-per-message"><span class="secno">1.4.4. </span><span class="content">Blank Node Identifiers Are Scoped Per Message</span><a class="self-link" href="#rdf-xml-blank-nodes-scoped-per-message"></a></h4>
+   <h4 class="heading settled" data-level="1.3.4" id="rdf-xml-blank-nodes-scoped-per-message"><span class="secno">1.3.4. </span><span class="content">Blank Node Identifiers Are Scoped Per Message</span><a class="self-link" href="#rdf-xml-blank-nodes-scoped-per-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-><c- f>></c->
@@ -2593,7 +2457,7 @@ Message 2 contains one quad whose subject is a blank node.
 The two blank nodes must not be the same RDF term.
 </pre>
    <p>This test must be performed on one continuous input string or stream, not by splitting the input and creating two independent parser instances.</p>
-   <h4 class="heading settled" data-level="1.4.5" id="rdf-xml-blank-node-reused-within-message"><span class="secno">1.4.5. </span><span class="content">Blank Node Identifier Reused Within One Message</span><a class="self-link" href="#rdf-xml-blank-node-reused-within-message"></a></h4>
+   <h4 class="heading settled" data-level="1.3.5" id="rdf-xml-blank-node-reused-within-message"><span class="secno">1.3.5. </span><span class="content">Blank Node Identifier Reused Within One Message</span><a class="self-link" href="#rdf-xml-blank-node-reused-within-message"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-><c- f>></c->
@@ -2611,7 +2475,7 @@ The two blank nodes must not be the same RDF term.
 <pre class="highlight language-text">Message 1 contains two quads whose subjects are blank nodes.
 The two blank nodes must be the same RDF term.
 </pre>
-   <h4 class="heading settled" data-level="1.4.6" id="rdf-xml-namespaces-inherited"><span class="secno">1.4.6. </span><span class="content">Namespaces Declared On The Log Element</span><a class="self-link" href="#rdf-xml-namespaces-inherited"></a></h4>
+   <h4 class="heading settled" data-level="1.3.6" id="rdf-xml-namespaces-inherited"><span class="secno">1.3.6. </span><span class="content">Namespaces Declared On The Log Element</span><a class="self-link" href="#rdf-xml-namespaces-inherited"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/one/"</c-><c- f>></c->
@@ -2643,7 +2507,7 @@ Message 3:
   &lt;http://example.org/s> &lt;http://example.org/one/p> &lt;http://example.org/o> .
 </pre>
    <p>The namespace declared on the second <code>&lt;rdf:RDF></code> element applies only to that message.</p>
-   <h4 class="heading settled" data-level="1.4.7" id="rdf-xml-base-inherited"><span class="secno">1.4.7. </span><span class="content">Base IRI Declared On The Log Element</span><a class="self-link" href="#rdf-xml-base-inherited"></a></h4>
+   <h4 class="heading settled" data-level="1.3.7" id="rdf-xml-base-inherited"><span class="secno">1.3.7. </span><span class="content">Base IRI Declared On The Log Element</span><a class="self-link" href="#rdf-xml-base-inherited"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-> <c- e>xml:base=</c-><c- s>"http://example.org/one/"</c-><c- f>></c->
@@ -2674,7 +2538,7 @@ Message 2:
 Message 3:
   &lt;http://example.org/one/s> &lt;http://example.org/p> &lt;http://example.org/one/o> .
 </pre>
-   <h4 class="heading settled" data-level="1.4.8" id="rdf-xml-lang-inherited"><span class="secno">1.4.8. </span><span class="content">Language Tag Declared On The Log Element</span><a class="self-link" href="#rdf-xml-lang-inherited"></a></h4>
+   <h4 class="heading settled" data-level="1.3.8" id="rdf-xml-lang-inherited"><span class="secno">1.3.8. </span><span class="content">Language Tag Declared On The Log Element</span><a class="self-link" href="#rdf-xml-lang-inherited"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-> <c- e>xml:lang=</c-><c- s>"en"</c-><c- f>></c->
@@ -2705,7 +2569,7 @@ Message 2:
 Message 3:
   &lt;http://example.org/s> &lt;http://example.org/p> "bye"@en .
 </pre>
-   <h4 class="heading settled" data-level="1.4.9" id="rdf-xml-comments-between-messages"><span class="secno">1.4.9. </span><span class="content">Comments And Processing Instructions Between Messages Are Ignored</span><a class="self-link" href="#rdf-xml-comments-between-messages"></a></h4>
+   <h4 class="heading settled" data-level="1.3.9" id="rdf-xml-comments-between-messages"><span class="secno">1.3.9. </span><span class="content">Comments And Processing Instructions Between Messages Are Ignored</span><a class="self-link" href="#rdf-xml-comments-between-messages"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-><c- f>></c->
@@ -2731,7 +2595,7 @@ Message 3:
 Message 2:
   &lt;http://example.org/s2> &lt;http://example.org/p> &lt;http://example.org/o2> .
 </pre>
-   <h4 class="heading settled" data-level="1.4.10" id="rdf-xml-multiline-literal"><span class="secno">1.4.10. </span><span class="content">Multiline Literal</span><a class="self-link" href="#rdf-xml-multiline-literal"></a></h4>
+   <h4 class="heading settled" data-level="1.3.10" id="rdf-xml-multiline-literal"><span class="secno">1.3.10. </span><span class="content">Multiline Literal</span><a class="self-link" href="#rdf-xml-multiline-literal"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-><c- f>></c->
@@ -2747,7 +2611,7 @@ line two<c- f>&lt;/ex:p></c->
 <pre class="highlight language-text">Message 1:
   &lt;http://example.org/s> &lt;http://example.org/p> "line one\nline two" .
 </pre>
-   <h3 class="heading settled" data-level="1.5" id="serialization-tests-turtle-trig-n-triples-n-quads"><span class="secno">1.5. </span><span class="content">Serialization Tests for Turtle, TriG, N-Triples, and N-Quads</span><a class="self-link" href="#serialization-tests-turtle-trig-n-triples-n-quads"></a></h3>
+   <h3 class="heading settled" data-level="1.4" id="serialization-tests-turtle-trig-n-triples-n-quads"><span class="secno">1.4. </span><span class="content">Serialization Tests for Turtle, TriG, N-Triples, and N-Quads</span><a class="self-link" href="#serialization-tests-turtle-trig-n-triples-n-quads"></a></h3>
    <p>Given a sequence of RDF Messages, a serializer should write a document that can be parsed back into the same sequence of messages and quads.</p>
    <p>Serializers may choose the concrete message delimiter supported by their syntax. These tests should not assert whether <code>@message .</code> or <code>MESSAGE</code> was used.</p>
    <p>Round-trip input messages:</p>
@@ -2784,8 +2648,8 @@ Message 2:
 Message 2:
   &lt;http://example.org/d> &lt;http://example.org/e> &lt;http://example.org/f> &lt;http://example.org/g> .
 </pre>
-   <h3 class="heading settled" data-level="1.6" id="error-tests"><span class="secno">1.6. </span><span class="content">Error Tests</span><a class="self-link" href="#error-tests"></a></h3>
-   <h4 class="heading settled" data-level="1.6.1" id="message-delimiter-without-message-support"><span class="secno">1.6.1. </span><span class="content">Message Delimiter Without Message Support</span><a class="self-link" href="#message-delimiter-without-message-support"></a></h4>
+   <h3 class="heading settled" data-level="1.5" id="error-tests"><span class="secno">1.5. </span><span class="content">Error Tests</span><a class="self-link" href="#error-tests"></a></h3>
+   <h4 class="heading settled" data-level="1.5.1" id="message-delimiter-without-message-support"><span class="secno">1.5.1. </span><span class="content">Message Delimiter Without Message Support</span><a class="self-link" href="#message-delimiter-without-message-support"></a></h4>
    <p>If a parser is not in RDF Messages mode and encounters a message delimiter, it must reject the document.</p>
    <p>Input:</p>
 <pre class="highlight language-turtle"><c- g>&lt;http://example.org/s></c-> <c- g>&lt;http://example.org/p></c-> <c- g>&lt;http://example.org/o></c-> <c- p>.</c->
@@ -2794,7 +2658,7 @@ MESSAGE
    <p>Expected result:</p>
 <pre class="highlight language-text">Parse error.
 </pre>
-   <h4 class="heading settled" data-level="1.6.2" id="at-message-without-trailing-dot"><span class="secno">1.6.2. </span><span class="content"><code>@message</code> Without Trailing Dot</span><a class="self-link" href="#at-message-without-trailing-dot"></a></h4>
+   <h4 class="heading settled" data-level="1.5.2" id="at-message-without-trailing-dot"><span class="secno">1.5.2. </span><span class="content"><code>@message</code> Without Trailing Dot</span><a class="self-link" href="#at-message-without-trailing-dot"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
 <c- g>&lt;http://example.org/s></c-> <c- g>&lt;http://example.org/p></c-> <c- g>&lt;http://example.org/o></c-> <c- p>.</c->
@@ -2803,7 +2667,7 @@ MESSAGE
    <p>Expected result:</p>
 <pre class="highlight language-text">Parse error.
 </pre>
-   <h4 class="heading settled" data-level="1.6.3" id="message-delimiter-inside-an-open-graph-block"><span class="secno">1.6.3. </span><span class="content">Message Delimiter Inside An Open Graph Block</span><a class="self-link" href="#message-delimiter-inside-an-open-graph-block"></a></h4>
+   <h4 class="heading settled" data-level="1.5.3" id="message-delimiter-inside-an-open-graph-block"><span class="secno">1.5.3. </span><span class="content">Message Delimiter Inside An Open Graph Block</span><a class="self-link" href="#message-delimiter-inside-an-open-graph-block"></a></h4>
    <p>A message delimiter must not be accepted inside an open graph block. It must be rejected instead of being interpreted as splitting the graph block across two messages.</p>
    <p>Input:</p>
 <pre class="highlight language-turtle">VERSION <c- s>"1.2-messages"</c->
@@ -2816,7 +2680,7 @@ MESSAGE
    <p>Expected result:</p>
 <pre class="highlight language-text">Parse error.
 </pre>
-   <h4 class="heading settled" data-level="1.6.4" id="rdf-xml-wrong-root-element"><span class="secno">1.6.4. </span><span class="content">RDF/XML Root Element Is Not <code>rdfm:MessageLog</code></span><a class="self-link" href="#rdf-xml-wrong-root-element"></a></h4>
+   <h4 class="heading settled" data-level="1.5.4" id="rdf-xml-wrong-root-element"><span class="secno">1.5.4. </span><span class="content">RDF/XML Root Element Is Not <code>rdfm:MessageLog</code></span><a class="self-link" href="#rdf-xml-wrong-root-element"></a></h4>
    <p>If a parser is reading an RDF/XML RDF Message Log, it must reject a document whose root element is not <code>&lt;rdfm:MessageLog></code>.</p>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
@@ -2829,7 +2693,7 @@ MESSAGE
    <p>Expected result:</p>
 <pre class="highlight language-text">Parse error.
 </pre>
-   <h4 class="heading settled" data-level="1.6.5" id="rdf-xml-node-element-in-log"><span class="secno">1.6.5. </span><span class="content">RDF/XML Node Element Directly Inside <code>rdfm:MessageLog</code></span><a class="self-link" href="#rdf-xml-node-element-in-log"></a></h4>
+   <h4 class="heading settled" data-level="1.5.5" id="rdf-xml-node-element-in-log"><span class="secno">1.5.5. </span><span class="content">RDF/XML Node Element Directly Inside <code>rdfm:MessageLog</code></span><a class="self-link" href="#rdf-xml-node-element-in-log"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-><c- f>></c->
@@ -2841,7 +2705,7 @@ MESSAGE
    <p>Expected result:</p>
 <pre class="highlight language-text">Parse error.
 </pre>
-   <h4 class="heading settled" data-level="1.6.6" id="rdf-xml-text-between-messages"><span class="secno">1.6.6. </span><span class="content">RDF/XML Text Between Messages</span><a class="self-link" href="#rdf-xml-text-between-messages"></a></h4>
+   <h4 class="heading settled" data-level="1.5.6" id="rdf-xml-text-between-messages"><span class="secno">1.5.6. </span><span class="content">RDF/XML Text Between Messages</span><a class="self-link" href="#rdf-xml-text-between-messages"></a></h4>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
 <c- f>&lt;rdfm:MessageLog</c-> <c- e>xmlns:rdf=</c-><c- s>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"</c-> <c- e>xmlns:rdfm=</c-><c- s>"https://w3c-cg.github.io/rsp/spec/messages#"</c-> <c- e>xmlns:ex=</c-><c- s>"http://example.org/"</c-><c- f>></c->
@@ -2861,7 +2725,7 @@ MESSAGE
    <p>Expected result:</p>
 <pre class="highlight language-text">Parse error.
 </pre>
-   <h4 class="heading settled" data-level="1.6.7" id="rdf-xml-log-without-message-support"><span class="secno">1.6.7. </span><span class="content">RDF/XML Log Read By A Parser Without Message Support</span><a class="self-link" href="#rdf-xml-log-without-message-support"></a></h4>
+   <h4 class="heading settled" data-level="1.5.7" id="rdf-xml-log-without-message-support"><span class="secno">1.5.7. </span><span class="content">RDF/XML Log Read By A Parser Without Message Support</span><a class="self-link" href="#rdf-xml-log-without-message-support"></a></h4>
    <p>If a parser is not in RDF Messages mode and reads an RDF/XML RDF Message Log as a plain RDF/XML document, it must reject the document, because <code>rdf:RDF</code> is not allowed as a property element name.</p>
    <p>Input:</p>
 <pre class="highlight language-xml"><c- cp>&lt;?xml version="1.0" encoding="utf-8"?></c->
