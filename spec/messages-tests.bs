@@ -565,6 +565,316 @@ Message 1:
   RDF dataset obtained by interpreting the JSON object as regular JSON-LD, without a stream-level active context.
 ```
 
+## Parsing Tests for RDF/XML ## {#parsing-tests-rdf-xml}
+
+These tests apply to parsers of RDF Message Logs in the RDF/XML serialization. In all tests, the `rdfm` prefix refers to `https://w3c-cg.github.io/rsp/spec/messages#`.
+
+### Two Messages ### {#rdf-xml-two-messages}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s1">
+      <ex:p rdf:resource="http://example.org/o1"/>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s2">
+      <ex:p rdf:resource="http://example.org/o2"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+Message 2:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+### Empty Log ### {#rdf-xml-empty-log}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#"/>
+```
+
+Expected result:
+
+```text
+No messages.
+```
+
+### Empty Message Between Non-Empty Messages ### {#rdf-xml-empty-message}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s1">
+      <ex:p rdf:resource="http://example.org/o1"/>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF/>
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s2">
+      <ex:p rdf:resource="http://example.org/o2"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+Message 2:
+  (empty)
+
+Message 3:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+### Blank Node Identifiers Are Scoped Per Message ### {#rdf-xml-blank-nodes-scoped-per-message}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <rdf:RDF>
+    <rdf:Description rdf:nodeID="b0">
+      <ex:p rdf:resource="http://example.org/o1"/>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF>
+    <rdf:Description rdf:nodeID="b0">
+      <ex:p rdf:resource="http://example.org/o2"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected result:
+
+```text
+Message 1 contains one quad whose subject is a blank node.
+Message 2 contains one quad whose subject is a blank node.
+The two blank nodes must not be the same RDF term.
+```
+
+This test must be performed on one continuous input string or stream, not by splitting the input and creating two independent parser instances.
+
+### Blank Node Identifier Reused Within One Message ### {#rdf-xml-blank-node-reused-within-message}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <rdf:RDF>
+    <rdf:Description rdf:nodeID="b0">
+      <ex:p rdf:resource="http://example.org/o1"/>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="b0">
+      <ex:p rdf:resource="http://example.org/o2"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected result:
+
+```text
+Message 1 contains two quads whose subjects are blank nodes.
+The two blank nodes must be the same RDF term.
+```
+
+### Namespaces Declared On The Log Element ### {#rdf-xml-namespaces-inherited}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/one/">
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s">
+      <ex:p rdf:resource="http://example.org/o"/>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF xmlns:ex="http://example.org/two/">
+    <rdf:Description rdf:about="http://example.org/s">
+      <ex:p rdf:resource="http://example.org/o"/>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s">
+      <ex:p rdf:resource="http://example.org/o"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s> <http://example.org/one/p> <http://example.org/o> .
+
+Message 2:
+  <http://example.org/s> <http://example.org/two/p> <http://example.org/o> .
+
+Message 3:
+  <http://example.org/s> <http://example.org/one/p> <http://example.org/o> .
+```
+
+The namespace declared on the second `<rdf:RDF>` element applies only to that message.
+
+### Base IRI Declared On The Log Element ### {#rdf-xml-base-inherited}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/" xml:base="http://example.org/one/">
+  <rdf:RDF>
+    <rdf:Description rdf:about="s">
+      <ex:p rdf:resource="o"/>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF xml:base="http://example.org/two/">
+    <rdf:Description rdf:about="s">
+      <ex:p rdf:resource="o"/>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF>
+    <rdf:Description rdf:about="s">
+      <ex:p rdf:resource="o"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/one/s> <http://example.org/p> <http://example.org/one/o> .
+
+Message 2:
+  <http://example.org/two/s> <http://example.org/p> <http://example.org/two/o> .
+
+Message 3:
+  <http://example.org/one/s> <http://example.org/p> <http://example.org/one/o> .
+```
+
+### Language Tag Declared On The Log Element ### {#rdf-xml-lang-inherited}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/" xml:lang="en">
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s">
+      <ex:p>hello</ex:p>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF xml:lang="pl">
+    <rdf:Description rdf:about="http://example.org/s">
+      <ex:p>czesc</ex:p>
+    </rdf:Description>
+  </rdf:RDF>
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s">
+      <ex:p>bye</ex:p>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s> <http://example.org/p> "hello"@en .
+
+Message 2:
+  <http://example.org/s> <http://example.org/p> "czesc"@pl .
+
+Message 3:
+  <http://example.org/s> <http://example.org/p> "bye"@en .
+```
+
+### Comments And Processing Instructions Between Messages Are Ignored ### {#rdf-xml-comments-between-messages}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <!-- first message -->
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s1">
+      <ex:p rdf:resource="http://example.org/o1"/>
+    </rdf:Description>
+  </rdf:RDF>
+  <?example-pi some data?>
+  <!-- second message -->
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s2">
+      <ex:p rdf:resource="http://example.org/o2"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s1> <http://example.org/p> <http://example.org/o1> .
+
+Message 2:
+  <http://example.org/s2> <http://example.org/p> <http://example.org/o2> .
+```
+
+### Multiline Literal ### {#rdf-xml-multiline-literal}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s">
+      <ex:p>line one
+line two</ex:p>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected messages:
+
+```text
+Message 1:
+  <http://example.org/s> <http://example.org/p> "line one\nline two" .
+```
+
 ## Serialization Tests for Turtle, TriG, N-Triples, and N-Quads ## {#serialization-tests-turtle-trig-n-triples-n-quads}
 
 Given a sequence of RDF Messages, a serializer should write a document that can be parsed back into the same sequence of messages and quads.
@@ -665,6 +975,96 @@ VERSION "1.2-messages"
 MESSAGE
   <http://example.org/d> <http://example.org/e> <http://example.org/f> .
 }
+```
+
+Expected result:
+
+```text
+Parse error.
+```
+
+### RDF/XML Root Element Is Not `rdfm:MessageLog` ### {#rdf-xml-wrong-root-element}
+
+If a parser is reading an RDF/XML RDF Message Log, it must reject a document whose root element is not `<rdfm:MessageLog>`.
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ex="http://example.org/">
+  <rdf:Description rdf:about="http://example.org/s">
+    <ex:p rdf:resource="http://example.org/o"/>
+  </rdf:Description>
+</rdf:RDF>
+```
+
+Expected result:
+
+```text
+Parse error.
+```
+
+### RDF/XML Node Element Directly Inside `rdfm:MessageLog` ### {#rdf-xml-node-element-in-log}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <rdf:Description rdf:about="http://example.org/s">
+    <ex:p rdf:resource="http://example.org/o"/>
+  </rdf:Description>
+</rdfm:MessageLog>
+```
+
+Expected result:
+
+```text
+Parse error.
+```
+
+### RDF/XML Text Between Messages ### {#rdf-xml-text-between-messages}
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s1">
+      <ex:p rdf:resource="http://example.org/o1"/>
+    </rdf:Description>
+  </rdf:RDF>
+  some text
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s2">
+      <ex:p rdf:resource="http://example.org/o2"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
+```
+
+Expected result:
+
+```text
+Parse error.
+```
+
+### RDF/XML Log Read By A Parser Without Message Support ### {#rdf-xml-log-without-message-support}
+
+If a parser is not in RDF Messages mode and reads an RDF/XML RDF Message Log as a plain RDF/XML document, it must reject the document, because `rdf:RDF` is not allowed as a property element name.
+
+Input:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rdfm:MessageLog xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfm="https://w3c-cg.github.io/rsp/spec/messages#" xmlns:ex="http://example.org/">
+  <rdf:RDF>
+    <rdf:Description rdf:about="http://example.org/s">
+      <ex:p rdf:resource="http://example.org/o"/>
+    </rdf:Description>
+  </rdf:RDF>
+</rdfm:MessageLog>
 ```
 
 Expected result:
