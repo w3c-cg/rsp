@@ -120,158 +120,9 @@ Issue: Find out and document the similarities/differences to the [RDF-JS Stream 
 
 ## Discovering RDF Message Streams ## {#stream-discovery}
 
-A push-based or message-based channel can advertise that it carries [=RDF Messages=] by declaring the RDF media type of the payload at channel, subscription, or protocol-message level using `RDF-Message-Content-Type` or a protocol-native equivalent.
+A producer can advertise that a channel carries [=RDF Messages=] through channel or subscription metadata, protocol-message metadata, or an agreement between producer and consumer. Such information can identify the RDF serialization and how message boundaries are represented, as well as any context needed to interpret the payloads.
 
-If a channel is declared to carry [=RDF Messages=], each native protocol message MUST be interpreted as one [=RDF Message=]. Blank node identifiers are scoped to that protocol message only, and RDF data from different protocol messages MUST NOT be merged by default.
-
-For JSON-LD payloads, a channel MAY provide an external JSON-LD context using the JSON-LD context link relation: `Link: &lt;https://example.org/context.jsonld&gt;; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`. If a stream is identified by an IRI, the linked context for that stream IRI MUST remain stable for the lifetime of that stream.
-
-### Server-Sent Events ### {#sse-live-streams}
-
-A Server-Sent Events stream ([[!EventSource]]) carrying [=RDF Messages=] MUST advertise `Content-Type: text/event-stream`. The producer MUST declare the RDF media type of event payloads using `RDF-Message-Content-Type`. Each SSE event MUST be interpreted as one [=RDF Message=].
-
-The value of `RDF-Message-Content-Type` MUST be an RDF media type for a serialization that can be represented in SSE `data` fields, such as `application/ld+json`, `text/turtle`, `application/trig`, `application/n-triples`, or `application/n-quads`. Binary RDF serializations, such as `application/x-jelly-rdf`, MUST NOT be sent directly in SSE `data` fields.
-
-```http
-RDF-Message-Content-Type: <rdf-media-type>
-```
-
-<div class="example">
-
-```http
-Content-Type: text/event-stream
-Cache-Control: no-cache
-Link: <https://example.org/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
-RDF-Message-Content-Type: application/ld+json
-```
-
-```text
-event: rdf-message
-data: {"@id":"https://example.org/s1","https://example.org/p":"value"}
-```
-
-</div>
-
-### WebSockets ### {#websocket-live-streams}
-
-A WebSocket stream ([[!WebSockets]]) carrying [=RDF Messages=] MUST declare the RDF media type using a `Sec-WebSocket-Protocol` subprotocol token in the opening handshake. A client MAY offer multiple RDF Message subprotocol tokens, each corresponding to a different RDF serialization. The server MUST select one of the offered subprotocol tokens and echo it in the opening handshake response. Each WebSocket message MUST be interpreted as one [=RDF Message=].
-
-The selected subprotocol token determines the RDF media type of all WebSocket messages on that connection:
-
-- `rdfm.ld-json` means `application/ld+json`.
-- `rdfm.turtle` means `text/turtle`.
-- `rdfm.trig` means `application/trig`.
-- `rdfm.n-triples` means `application/n-triples`.
-- `rdfm.n-quads` means `application/n-quads`.
-- `rdfm.jelly` means `application/x-jelly-rdf`.
-
-When the selected RDF serialization is binary, such as `rdfm.jelly`, each [=RDF Message=] MUST be sent as a binary WebSocket message.
-
-```http
-Sec-WebSocket-Protocol: <rdf-message-subprotocol>, ...
-```
-
-<div class="example">
-
-Client handshake request offering JSON-LD and N-Triples:
-
-```http
-GET /stream HTTP/1.1
-Host: example.org
-Upgrade: websocket
-Connection: Upgrade
-Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
-Sec-WebSocket-Version: 13
-Sec-WebSocket-Protocol: rdfm.ld-json, rdfm.n-triples
-```
-
-Server handshake response selecting N-Triples:
-
-```http
-HTTP/1.1 101 Switching Protocols
-Upgrade: websocket
-Connection: Upgrade
-Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
-Sec-WebSocket-Protocol: rdfm.n-triples
-```
-
-```text
-WebSocket message:
-<https://example.org/s1> <https://example.org/p> <https://example.org/o1> .
-```
-
-</div>
-
-### Kafka ### {#kafka-live-streams}
-
-A Kafka topic carrying [=RDF Messages=] MUST declare the RDF media type using `RDF-Message-Content-Type` in record headers or topic metadata. Each Kafka record MUST be interpreted as one [=RDF Message=].
-
-The value of `RDF-Message-Content-Type` MUST be an RDF media type.
-
-```text
-RDF-Message-Content-Type: <rdf-media-type>
-```
-
-<div class="example">
-
-```text
-topic: observations
-headers:
-  RDF-Message-Content-Type: application/n-triples
-value:
-  <https://example.org/s1> <https://example.org/p> <https://example.org/o1> .
-```
-
-</div>
-
-### MQTT 5 ### {#mqtt-live-streams}
-
-An MQTT 5 ([[mqtt-5]]) topic carrying [=RDF Messages=] MUST declare the RDF media type using the PUBLISH `Content Type` property. Each MQTT PUBLISH packet MUST be interpreted as one [=RDF Message=].
-
-The value of `Content Type` MUST be an RDF media type.
-
-```text
-Content Type: <rdf-media-type>
-```
-
-<div class="example">
-
-```text
-PUBLISH topic: observations
-Content Type: application/ld+json
-Payload: {"@id":"https://example.org/s1","https://example.org/p":"value"}
-```
-
-</div>
-
-### Other message brokers ### {#message-broker-live-streams}
-
-AMQP, NATS, Pulsar, and similar message brokers carrying [=RDF Messages=] MUST declare the RDF media type using `RDF-Message-Content-Type` in message properties, message headers, stream metadata, or equivalent broker metadata. Each broker message MUST be interpreted as one [=RDF Message=].
-
-The value of `RDF-Message-Content-Type`, or the protocol-native content type property, MUST be an RDF media type.
-
-```text
-RDF-Message-Content-Type: <rdf-media-type>
-```
-
-<div class="example">
-
-```text
-headers:
-  RDF-Message-Content-Type: application/trig
-body:
-  <https://example.org/g> {
-    <https://example.org/s1> <https://example.org/p> <https://example.org/o1> .
-  }
-```
-
-</div>
-
-### Jelly gRPC ### {#jelly-grpc}
-
-See https://w3id.org/jelly/dev/specification/streaming/
-
-Every RdfStreamFrame is in fact an RDF Message.
+The discovery mechanism and its mapping to a particular stream protocol are out of this specification at this moment. The techniques in [[#stream-discovery-examples]] illustrate some possibilities; neither the protocols nor the ways of using them form a closed list.
 
 ## RDF Message Logs ## {#rdf-message-logs}
 
@@ -683,6 +534,114 @@ Issue: Write down the section on profiles. Tracked as <w3c-cg/rsp#1>.
 An <dfn>RDF Message Stream Profile</dfn> is a ... (TODO)
 
 # Examples and use cases # {#examples}
+
+## Discovering and carrying RDF Message Streams ## {#stream-discovery-examples}
+
+These examples illustrate ways for producers and consumers to agree on an RDF serialization and message boundaries. The headers, subprotocol names, and mappings shown here are illustrative conventions, rather than requirements of this specification. Other protocols and arrangements can also carry [=RDF Message Streams=]. In each example, messages are interpreted independently as described in [[#scope]].
+
+### Channel metadata: Server-Sent Events ### {#sse-live-streams}
+
+<div class="example">
+
+A producer exposes a Server-Sent Events stream ([[EventSource]]) with the protocol's `text/event-stream` media type. In this example, a custom `RDF-Message-Content-Type` response header tells the consumer that event payloads use JSON-LD, and each event carries one [=RDF Message=]. This separates the channel's media type from the RDF serialization of its payloads.
+
+```http
+Content-Type: text/event-stream
+Cache-Control: no-cache
+RDF-Message-Content-Type: application/ld+json
+```
+
+```text
+event: rdf-message
+data: {"@id":"https://example.org/s1","https://example.org/p":"value"}
+```
+
+Other text-based RDF serializations, such as Turtle, TriG, N-Triples, or N-Quads, could be carried in the event's `data` fields using the same approach. Binary payloads would need an additional encoding suitable for those text fields.
+
+For JSON-LD payloads, a producer and consumer could also agree to use an external context advertised through the JSON-LD context link relation:
+
+```http
+Link: <https://example.org/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+```
+
+In this arrangement, keeping the linked context stable for the lifetime of the stream lets consumers interpret its messages consistently.
+
+</div>
+
+### Subprotocol negotiation: WebSockets ### {#websocket-live-streams}
+
+<div class="example">
+
+A WebSocket client and server ([[WebSockets]]) agree on a serialization during the opening handshake. In this example, they use the illustrative tokens `rdfm.ld-json` for JSON-LD and `rdfm.n-triples` for N-Triples, with one [=RDF Message=] per WebSocket message.
+
+The client offers both serializations:
+
+```http
+GET /stream HTTP/1.1
+Host: example.org
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+Sec-WebSocket-Version: 13
+Sec-WebSocket-Protocol: rdfm.ld-json, rdfm.n-triples
+```
+
+The server selects N-Triples:
+
+```http
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+Sec-WebSocket-Protocol: rdfm.n-triples
+```
+
+```text
+WebSocket message:
+<https://example.org/s1> <https://example.org/p> <https://example.org/o1> .
+```
+
+The same technique could negotiate other RDF serializations, including binary serializations carried in binary WebSocket messages.
+
+</div>
+
+### Message metadata: MQTT and other brokers ### {#message-broker-live-streams}
+
+<div class="example" id="mqtt-live-streams">
+
+An MQTT 5 producer ([[mqtt-5]]) uses the PUBLISH `Content Type` property to indicate the RDF serialization. Here, each PUBLISH payload carries one [=RDF Message=] in JSON-LD:
+
+```text
+PUBLISH topic: observations
+Content Type: application/ld+json
+Payload: {"@id":"https://example.org/s1","https://example.org/p":"value"}
+```
+
+</div>
+
+<div class="example" id="kafka-live-streams">
+
+Where a suitable native content type property is unavailable, producers and consumers could agree on a custom header. For example, a Kafka record could carry one [=RDF Message=] in N-Triples and identify its serialization using `RDF-Message-Content-Type`:
+
+```text
+topic: observations
+headers:
+  RDF-Message-Content-Type: application/n-triples
+value:
+  <https://example.org/s1> <https://example.org/p> <https://example.org/o1> .
+```
+
+Similar arrangements could use message properties, headers, or shared topic metadata with AMQP, NATS, Pulsar, and other brokers. The producer and consumer agree on the metadata and the mapping of broker messages to [=RDF Messages=].
+
+</div>
+
+### Serialization framing: Jelly gRPC ### {#jelly-grpc}
+
+<div class="example">
+
+A producer and consumer using [Jelly gRPC](https://w3id.org/jelly/dev/specification/streaming/) can use the serialization's own framing: each `RdfStreamFrame` carries one [=RDF Message=]. In this arrangement, the service interface identifies the serialization and its frames delimit messages, rather than a separate content type header.
+
+</div>
 
 ## An archive of an RDF Stream ## {#stream-archive}
 
