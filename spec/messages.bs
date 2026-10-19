@@ -735,7 +735,7 @@ This is what is being used by [the Linked Data Event Streams “member extractio
 
 The CSV file `products.csv` contains two data rows:
 
-```csv
+```text
 id,name,color
 p1,Hairdryer DRY 2000,red
 p2,27-inch 4K Monitor 2700P,black
