@@ -558,7 +558,7 @@ The [=RDF Message Log=] version MAY be announced with the `rdf:version` attribut
 
 Efficient interchange of [=RDF Message Logs=] may also be done using binary RDF serializations, such as [Jelly](https://w3id.org/jelly/), which already has built-in support for grouping quads into messages. We propose that Jelly and similar formats use the definitions from this specification to define the semantics of RDF Messages.
 
-In Jelly, each RdfStreamFrame is an [=RDF Message=].
+Jelly-RDF 1.2 has native support for RDF Messages, with [message boundary delimiters](https://w3id.org/jelly/dev/specification/serialization/#message-boundaries). Jelly-RDF 1.1 and earlier have no explicit support for RDF Messages, however, it can be assumed that each RdfStreamFrame represents a single [=RDF Message=].
 
 # RDF Message Stream Profiles # {#rdf-message-stream-profiles}
 
@@ -665,14 +665,6 @@ value:
 ```
 
 Similar arrangements could use message properties, headers, or shared topic metadata with AMQP, NATS, Pulsar, and other brokers. The producer and consumer agree on the metadata and the mapping of broker messages to [=RDF Messages=].
-
-</div>
-
-### Serialization framing: Jelly gRPC ### {#jelly-grpc}
-
-<div class="example">
-
-A producer and consumer using [Jelly gRPC](https://w3id.org/jelly/dev/specification/streaming/) can use the serialization's own framing: each `RdfStreamFrame` carries one [=RDF Message=]. In this arrangement, the service interface identifies the serialization and its frames delimit messages, rather than a separate content type header.
 
 </div>
 
@@ -808,11 +800,11 @@ To distribute this stream, TAR archives had previously been used, where each fil
 This was greatly improved by using an [=RDF Message Log=] serialization instead, as this allowed to save the entire stream into a single file, while still being able to reconstruct the individual messages again.
 Currently, [all datasets in RiverBench](https://w3id.org/riverbench/v/dev/datasets) are distributed as RDF Message Logs in the N-Triples/N-Quads formats (the "flat" distributions).
 
-As an alternative, [Jelly-RDF](https://w3id.org/jelly) distributions are also available, where the entire stream is serialized as a single `.jelly` file. In the file, one [Jelly frame](https://w3id.org/jelly/dev/user-guide/#stream-frames) corresponds to one RDF dataset. This is also a valid [=RDF Message Log=] serialization.
+As an alternative, [Jelly-RDF](https://w3id.org/jelly) distributions are also available, where the entire stream is serialized as a single `.jelly` file. In Jelly-RDF 1.2 files native RDF Message delimiters are available. In Jelly-RDF 1.1 and earlier, each [Jelly frame](https://w3id.org/jelly/dev/user-guide/#stream-frames) corresponds to one RDF dataset.
 
 ## Nanopublications ## {#nanopublications}
 
-A [Nanopublication](https://nanopub.net/) is a small RDF dataset that contains an assertion, its provenance, and publication information. Nanopublications are stored and exchanged by a network of services (registries and query endpoints). Exchanging each Nanopublication individually leads to significant overhead, due to repeated HTTP requests necessitated by the lack of a format for grouping multiple Nanopublications together. This issue was resolved by using [Jelly](https://w3id.org/jelly/) to serialize multiple Nanopublications into a single byte stream, where each Nanopublication corresponds to a [Jelly frame](https://w3id.org/jelly/dev/user-guide/#stream-frames).
+A [Nanopublication](https://nanopub.net/) is a small RDF dataset that contains an assertion, its provenance, and publication information. Nanopublications are stored and exchanged by a network of services (registries and query endpoints). Exchanging each Nanopublication individually leads to significant overhead, due to repeated HTTP requests necessitated by the lack of a format for grouping multiple Nanopublications together. This issue was resolved by using [Jelly](https://w3id.org/jelly/) to serialize multiple Nanopublications into a single byte stream, where each Nanopublication corresponds to a [Jelly-RDF 1.1 frame](https://w3id.org/jelly/dev/user-guide/#stream-frames).
 
 Using an [=RDF Message Log=] serialization to group multiple Nanopublications into a single file would also solve this problem, while still allowing each Nanopublication to be processed individually as an [=RDF Message=].
 
