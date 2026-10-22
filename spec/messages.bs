@@ -558,7 +558,7 @@ The [=RDF Message Log=] version MAY be announced with the `rdf:version` attribut
 
 Efficient interchange of [=RDF Message Logs=] may also be done using binary RDF serializations, such as [Jelly](https://w3id.org/jelly/), which already has built-in support for grouping quads into messages. We propose that Jelly and similar formats use the definitions from this specification to define the semantics of RDF Messages.
 
-Jelly-RDF 1.2 has native support for RDF Messages, with [message boundary delimiters](https://w3id.org/jelly/dev/specification/serialization/#message-boundaries). Jelly-RDF 1.1 and earlier have no explicit support for RDF Messages, however, it can be assumed that each RdfStreamFrame represents a single [=RDF Message=].
+Jelly-RDF 1.2 has native support for RDF Messages, with [message boundary delimiters](https://w3id.org/jelly/1.2.x/specification/serialization/#message-boundaries). Jelly-RDF 1.1 and earlier have no explicit support for RDF Messages, however, it can be assumed that each RdfStreamFrame represents a single [=RDF Message=].
 
 # RDF Message Stream Profiles # {#rdf-message-stream-profiles}
 
